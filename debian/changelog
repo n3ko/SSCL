@@ -1,0 +1,11 @@
+libsscl (0.9.4-1) stable; urgency=low
+
+  * SDT support improved
+
+ -- Szilard Hajba <szilu@symbion.hu>  Fri, 12 Mar 2004 15:32:12 +0100
+
+libsscl (0.9.3-1) stable; urgency=low
+
+  * Initial Release.
+
+ -- Szilard Hajba <szilu@symbion.hu>  Fri,  5 Mar 2004 15:07:12 +0100

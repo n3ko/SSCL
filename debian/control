@@ -1,0 +1,23 @@
+Source: libsscl
+Section: symbion/libs
+Priority: optional
+Build-Depends: debhelper (>= 2.0.86), g++
+Maintainer: Szilard Hajba <szilu@symbion.hu>
+Standards-Version: 3.1.0
+
+Package: libsscl
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Simple, secure C++ library for daemons
+ Symbion Simple Class Library is a small, secure C++ library with some useful
+ data types (list, avltree), stream handling, networking support, lexical
+ analyzer, etc.  It is created for use in daemons.
+
+Package: libsscl-dev
+Section: symbion/devel
+Architecture: any
+Depends: libsscl (= ${Source-Version})
+Description: Symbion Simple Class Library: header files and libraries
+ SSCL is a small, secure C++ library with some useful data types (list,
+ avltree), stream handling, networking support, lexical analyzer, etc.
+ It is created for use in daemons.

@@ -9,7 +9,7 @@ OBJECTS = o/strfunc.o o/error.o o/object.o o/list.o o/avltree.o \
 all: o $(TARGET) $(SO_NAME) libsscl.so libsscl.a sscl.spec
 
 clean:
-	rm -rf o; rm -f core .depend $(TARGET) $(SO_NAME) libsscl.so libsscl.a
+	rm -rf o; rm -f core .depend libsscl.so* libsscl.a
 
 depend:
 	gcc -M -MM $(CCINCLUDE) *.cc |sed 's/^/o\//' >.depend
@@ -30,6 +30,9 @@ rpm_root: install sscl.spec
 
 rpm: sscl.spec
 	@if [ $$UID != '0' ]; then echo "Root password is required.."; su -c '${MAKE}  rpm_root'; else ${MAKE} rpm_root; fi
+
+deb:
+	dpkg-buildpackage -rfakeroot
 
 ifneq (,$(wildcard .depend))
     include .depend
