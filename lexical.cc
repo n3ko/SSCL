@@ -86,12 +86,12 @@ Token LexicalAnalyzer::next()
 	case ',': token=t_comma; c=get_c(); break;
 	case ':': token=t_colon; c=get_c(); break;
 	case ';': token=t_semicolon; c=get_c(); break;
-	case '(': token=t_opensbr; c=get_c(); break;
-	case ')': token=t_closesbr; c=get_c(); break;
-	case '{': token=t_openbr; c=get_c(); break;
-	case '}': token=t_closebr; c=get_c(); break;
-	case '[': token=t_opensqbr; c=get_c(); break;
-	case ']': token=t_closesqbr; c=get_c(); break;
+	case '(': token=t_lparen; c=get_c(); break;
+	case ')': token=t_rparen; c=get_c(); break;
+	case '{': token=t_lbrace; c=get_c(); break;
+	case '}': token=t_rbrace; c=get_c(); break;
+	case '[': token=t_lbrac; c=get_c(); break;
+	case ']': token=t_rbrac; c=get_c(); break;
 	default: throw Error("E-LEX", 0, "Parse error at or near '%c'", c);
     }
     return token;
@@ -114,12 +114,12 @@ void LexicalAnalyzer::parse_token(Token tok)
 	    case t_comma: msg="comma"; break;
 	    case t_colon: msg="':'"; break;
 	    case t_semicolon: msg="';'"; break;
-	    case t_opensbr: msg="'('"; break;
-	    case t_closesbr: msg="')'"; break;
-	    case t_openbr: msg="'{'"; break;
-	    case t_closebr: msg="'}'"; break;
-	    case t_opensqbr: msg="'['"; break;
-	    case t_closesqbr: msg="']'"; break;
+	    case t_lparen: msg="'('"; break;
+	    case t_rparen: msg="')'"; break;
+	    case t_lbrace: msg="'{'"; break;
+	    case t_rbrace: msg="'}'"; break;
+	    case t_lbrac: msg="'['"; break;
+	    case t_rbrac: msg="']'"; break;
 	}
 	throw Error("E-LEX", "TOKEXP", "%s expected", msg);
     }

@@ -157,12 +157,17 @@ int OutStream::put_c(const char c)
 
 int OutStream::write(const char *buffer, int n)
 {
-    return ::write(fd, buffer, n);
+    int s=n, w;
+    while (s>=0) {
+	s-=w=::write(fd, buffer+n-s, s);
+	if (!w) usleep(100);
+    }
+    return w<0 ? w : n;
 }
 
 int OutStream::write(const char *buffer)
 {
-    return ::write(fd, buffer, strlen(buffer));
+    return write(buffer, strlen(buffer));
 }
 
 Stream::Stream(int f, const int ilen, const int olen):

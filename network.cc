@@ -33,7 +33,6 @@ NetConn::NetConn(NetServer *serv, const int s, const int len=SSCL_BUF_LEN):
 	NullStream(s), Stream(s, len, 0)
 {
     server=serv;
-//    user="";
 }
 
 NetConn::NetConn(int family, const char *addr, const int port, const int len=SSCL_BUF_LEN):

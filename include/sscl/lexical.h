@@ -25,7 +25,7 @@
 
 typedef enum {t_bos, t_eos, t_word, t_string, t_int, t_oper,
 	t_dot, t_comma, /*t_slash,*/ t_colon, t_semicolon, /*t_star,*/
-	t_opensbr, t_closesbr, t_openbr, t_closebr, t_opensqbr, t_closesqbr
+	t_lparen, t_rparen, t_lbrace, t_rbrace, t_lbrac, t_rbrac
 } Token;
 typedef enum {la_string, la_file} LexicalAnalyzerType;
 class LexicalAnalyzer {
