@@ -6,7 +6,7 @@ OBJECTS = o/strfunc.o o/error.o o/object.o o/list.o o/avltree.o \
 	  o/sdt.o
 
 #---------------------------------------- Main rules
-all: o $(TARGET) $(SO_NAME) libsscl.so libsscl.a sscl.spec
+all: o $(TARGET) $(SO_NAME) libsscl.a sscl.spec #libsscl.so
 
 clean:
 	rm -rf o; rm -f core .depend libsscl.so* libsscl.a
@@ -48,6 +48,7 @@ $(TARGET): $(OBJECTS)
 
 libsscl.a: $(OBJECTS)
 	ar cru $@ $(OBJECTS)
+	ranlib $@
 
 o/%.o: %.cc
 	$(CC) $(CCOPTS) -c -o $@ $<
