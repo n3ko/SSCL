@@ -108,10 +108,11 @@ char *netconn_get_ip(NetConn *net)
 ///////////////
 // NetServer //
 ///////////////
-NetServer *netserver_init(NetServer *serv, int family, const char *addr, const int port,
-	const int max_conn, const int flags)
+NetServer *netserver_init(NetServer *serv, const NetConnFamily family, const char *addr,
+	const int port, const int max_conn, const int flags)
 {
-    if (family==PF_INET) { // Inet socket
+    serv->family=family;
+    if (family==nf_inet) { // Inet socket
 	struct sockaddr_in sa;
 	serv->fd=socket(PF_INET, SOCK_STREAM, 0);
 	if (serv->fd<0) return NULL;
@@ -123,7 +124,7 @@ NetServer *netserver_init(NetServer *serv, int family, const char *addr, const i
 	if (bind(serv->fd, (struct sockaddr *)&sa, sizeof(sa))<0) {
 	    close(serv->fd); return NULL;
 	}
-    } else if (family==PF_UNIX) { // Unix socket
+    } else if (family==nf_unix) { // Unix socket
 	struct sockaddr_un sa;
 	serv->fd=socket(PF_UNIX, SOCK_STREAM, 0);
 	if (serv->fd<0) return NULL;
@@ -144,7 +145,7 @@ NetServer *netserver_init(NetServer *serv, int family, const char *addr, const i
     return serv;
 }
 
-NetServer *netserver_new(const int family, const char *addr, const int port,
+NetServer *netserver_new(const NetConnFamily family, const char *addr, const int port,
 	const int max_conn, const int flags)
 {
     NetServer *serv=NEW(NetServer);
@@ -159,10 +160,10 @@ void netserver_done(NetServer *serv)
     }
 */
     char buf[32];
-    unlink(serv->address);
     shutdown(serv->fd, 2);
     while (read(serv->fd, buf, 30)>0);
     usleep(100);
+    if (serv->family==nf_unix) unlink(serv->address);
     close(serv->fd);
 }
 

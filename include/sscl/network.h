@@ -49,8 +49,15 @@ class NetConn {
 
 class NetServer/*: public AVLTree*/ {
     public:
-	NetServer(int family, char *addr, int port, int max_conn, int flags=0)
-		{netserver_init(&cs, family, addr, port, max_conn, flags);}
+	NetServer(const NetConnFamily family, const char *addr, const int port,
+		const int max_conn, const int flags=0)
+	{
+	    errno=0;
+	    if (!netserver_init(&cs, family, addr, port, max_conn, flags)) {
+		throw Error("E-SYS", errno, errno ? strerror(errno) : "Unknown error",
+			"NetServer::NetServer");
+	    }
+	}
 	~NetServer() {netserver_done(&cs);}
 	NetConn *accept(int flags=0, int buflen=SSCL_BUF_LEN)
 		{NetConn *nc=new NetConn; return netserver_accept(&cs, &nc->cs, flags, buflen) ? nc : NULL;}

@@ -33,6 +33,19 @@
 #define BUF_FREE_S(start, ptr, size) ((size)-((ptr)-(start)))
 #define BUF_FREE(start, ptr) (sizeof(start)-((ptr)-(start)))
 
+#ifndef str_cpy
+#  define str_cpy(...) sscl_str_cpy(__VA_ARGS__)
+#endif
+#ifndef str_ecpy
+#  define str_ecpy(...) sscl_str_ecpy(__VA_ARGS__)
+#endif
+#ifndef str_tcpy
+#  define str_tcpy(...) sscl_str_tcpy(__VA_ARGS__)
+#endif
+#ifndef str_cat
+#  define str_cat(...) sscl_str_cat(__VA_ARGS__)
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -44,14 +57,14 @@ extern char *_str_tok_internal_ptr;
 extern char *_str_split_internal_ptr;
 extern char *_str_cut_internal_ptr;
 
-static inline char *str_cpy(char *d, const char *s, int n)
+static inline char *sscl_str_cpy(char *d, const char *s, int n)
 {
     while (*s && n>0) *d++=*s++, n--;
     *d=0;
     return d;
 }
 
-static inline char *str_ecpy(char *d, const char *s, int n)
+static inline char *sscl_str_ecpy(char *d, const char *s, int n)
 {
     while (*s && n>0) {
 	if (*s=='\'' || *s=='\\') {
@@ -63,7 +76,7 @@ static inline char *str_ecpy(char *d, const char *s, int n)
     return d;
 }
 
-static inline char *str_tcpy(char *d, const char *s, int n)
+static inline char *sscl_str_tcpy(char *d, const char *s, int n)
 {
     register char c;
     while ((c=*s++) && n>0) {
@@ -80,10 +93,10 @@ static inline char *str_tcpy(char *d, const char *s, int n)
     return d;
 }
 
-static inline char *str_cat(char *d, const char *s, int n)
+static inline char *sscl_str_cat(char *d, const char *s, int n)
 {
     while (*d) d++;
-    return str_cpy(d, s, n);
+    return sscl_str_cpy(d, s, n);
 }
 
 static inline char *str_end(char *s)
@@ -136,7 +149,7 @@ static inline char *str_dup(const char *s)
     if (s) {
 	register int l=str_len(s);
 	register char *d=(char*)malloc(l+1);
-	if (d) str_cpy(d, s, l);
+	if (d) sscl_str_cpy(d, s, l);
 	return d;
     } else return CNULL;
 }

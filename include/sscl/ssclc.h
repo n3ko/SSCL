@@ -159,8 +159,10 @@ struct _HashNode {
 
 int cstring_hash(const char *str);
 Hash *hash_init(Hash *hash, int size, HashFunc hash_func);
+void hash_done(Hash *hash);
 const void *hash_get(const Hash *hash, const char *key);
 void hash_set(Hash *hash, const char *key, const void *data);
+const void *hash_delete(const Hash *hash, const char *key);
 
 //*********************
 // AVLTree
@@ -220,6 +222,7 @@ struct _NetConn {
 struct _NetServer {
     int fd;
     int clientnum;
+    NetConnFamily family;
     char *address;
 //    AVLTree clients;
 };
@@ -232,9 +235,9 @@ void netconn_done(NetConn *net);
 void netconn_free(NetConn *net);
 char *netconn_get_ip(NetConn *net);
 
-NetServer *netserver_init(NetServer *serv, int family, const char *addr, const int port,
-	const int max_conn, const int flags);
-NetServer *netserver_new(const int family, const char *addr, const int port,
+NetServer *netserver_init(NetServer *serv, const NetConnFamily family, const char *addr,
+	const int port, const int max_conn, const int flags);
+NetServer *netserver_new(const NetConnFamily family, const char *addr, const int port,
 	const int max_conn, const int flags);
 void netserver_done(NetServer *serv);
 NetConn *netserver_accept(NetServer *serv, NetConn *net, const int flags, const int buflen);

@@ -15,30 +15,27 @@
  * License along with this library; if not, write to the Free
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-#ifndef _SSCL_H
-#define _SSCL_H
 
-#include <sscl/config.h>
+#ifndef _SSCL_HASH_H_
+#define _SSCL_HASH_H_
 
-#include <sscl/strfunc.h>
+#include <sscl/ssclc.h>
 
-// Base classes (Error)
-#include <sscl/error.h>
+namespace SSCL {
 
-#include <sscl/object.h>
-#include <sscl/list.h>
-#include <sscl/hash.h>
-#include <sscl/avltree.h>
+// ============================================================ Hash
+class Hash: public Container {
+    public:
+	Hash(int size=16, HashFunc hash_func=NULL) {hash_init(&cs, size, hash_func);}
+	~Hash() {hash_done(&cs);}
+	void set(const char *key, void *data) {hash_set(&cs, key, data);}
+	const void *get(const char *key) {return hash_get(&cs, key);}
+	const void *del(const char *key) {return hash_delete(&cs, key);}
+	const void *operator[](const char *key) {return hash_get(&cs, key);}
+    private:
+	::Hash cs;
+};
 
-#include <sscl/stream.h>
+} /* namespace SSCL */
 
-// Lexical analyzer
-#include <sscl/lexical.h>
-
-// Network classes
-#include <sscl/network.h>
-
-// Symbion Daemon Tools communication classes
-#include <sscl/sdt.h>
-
-#endif /* _SSCL_H */
+#endif /* _SSCL_HASH_H_ */
