@@ -1,0 +1,61 @@
+General information
+===================
+
+Symbion Simple Class Library is a class library for C++.
+It is small, fast, robust and secure. Or at least it wants to be for the 1.0
+release :)
+
+Purpose
+=======
+
+It is designed for developing daemons, it has classes for:
+    * Stream handling
+    * Networking
+    * A Lexical Analyzer
+    * List handling
+    * AVLTree
+    * Error handling
+
+Stream, network and lexical analyzer classes seem to be robust and secure.
+The complex data structures (AVLTree, List) are not tested well.
+They also need some development to make them templates so they would be more
+usable.
+SSCL also has some secure string handling functions, but it lacks a String
+class.
+
+Documentation
+=============
+
+Sorry, SSCL does not have any documentation yet. Except the header files, of
+course :)
+If you are interested in this project, you want to use it then try to examine
+some projects that use it. The only open-source project I know is the Symbion
+Daemon Tool (SDT). You can find it on sourceforge.net.
+
+How to report bugs
+==================
+To report a bug, send mail to szilu at symbion.hu.
+In the mail include:
+
+* The version
+
+* Information about your system. For instance:
+
+    - What operating system and version
+    - What version of the C library
+    - What C/C++ compiler
+
+  And anything else you think is relevant.
+
+* How to reproduce the bug (Sample code, for example).
+
+Patches
+=======
+
+Patches can be sent to Szilu <szilu at symbion dot hu>.
+Please include your name and email address.
+
+If the patch fixes a bug, it is usually a good idea to include
+all the information described in "How to Report Bugs".
+
+    Szilard Hajba <szilu at symbion dot hu>
