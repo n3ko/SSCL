@@ -198,6 +198,7 @@ static inline char *str_cut(char *dst, char *src, const char *delim, int length)
 }
 
 char *str_itoa(char *d, int n, int i, const char fill, int base=10);
+
 char *str_printv(char *dst, const char *s, int n, va_list args);
 char *str_print(char *dst, const char *s, int n,...);
 

@@ -52,7 +52,7 @@ char *str_printv(char *dst, const char *s, int n, va_list args) {
 	if (*s=='%') {
 	    switch (*++s) {
 		case '%': *d++='%'; break;
-		case 'c': *d++=va_arg(args, char); break;
+		case 'c': *d++=va_arg(args, int); break;
 		case 's': if ((p=va_arg(args, char *))) {
 //fprintf(stderr, "str_cpy(%p, '%s', %d)", d, p, n);
 			d1=d; d=str_cpy(d, p, n); n-=(d-d1);

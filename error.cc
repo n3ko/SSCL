@@ -54,10 +54,15 @@ Error::Error(const char *lvl, int num, const char *txt,...)
     level=lvl; id=strdup(sid); func=NULL; text=strdup(s);
 }
 
-Error::Error(Error &error)
+Error::Error(Error const &error)
 {
     level=error.level; id=str_dup(error.id); func=error.func; text=str_dup(error.text);
 }
+
+//Error::Error(const Error error)
+//{
+//    level=error.level; id=str_dup(error.id); func=error.func; text=str_dup(error.text);
+//}
 
 Error::~Error()
 {

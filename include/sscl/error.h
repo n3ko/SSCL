@@ -27,7 +27,8 @@ class Error {
 	Error(const char *lvl, const char *i, const char *txt,...);
 //	Error(const char *lvl, int num, const char *fnc, const char *txt);
 	Error(const char *lvl, int num, const char *txt,...);
-	Error(Error &error);
+	Error(Error const &error);
+//	Error(Error const error);
 	virtual ~Error();
 	char *format();
     private:
