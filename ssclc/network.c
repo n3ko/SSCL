@@ -30,11 +30,11 @@
 ///////////////
 //  NetConn  //
 ///////////////
-NetConn *netconn_init(NetConn *net, const int family, const char *addr,
+NetConn *netconn_init(NetConn *net, const NetConnFamily family, const char *addr,
 	const int port, const int buflen)
 {
     int fd;
-    if (family==PF_INET) { // Inet socket
+    if (family==nf_inet) { // Inet socket
 	struct sockaddr_in sa;
 	struct hostent *hp;
 	if ((fd=socket(PF_INET, SOCK_STREAM, 0))<0) return NULL;
@@ -45,7 +45,7 @@ NetConn *netconn_init(NetConn *net, const int family, const char *addr,
 	if (connect(fd, (struct sockaddr*)&sa, sizeof(sa))<0) {
 	    close(fd); return NULL;
 	}
-    } else if (family==PF_UNIX) { // Unix socket
+    } else if (family==nf_unix) { // Unix socket
 	struct sockaddr_un sa;
 	if ((fd=socket(PF_UNIX, SOCK_STREAM, 0))<0) return NULL;
 	sa.sun_family=AF_UNIX;
@@ -70,7 +70,7 @@ NetConn *netconn_init_server(NetConn *net, NetServer *server, const int fd, cons
     return net;
 }
 
-NetConn *netconn_new(const int family, const char *addr, const int port, const int buflen)
+NetConn *netconn_new(const NetConnFamily family, const char *addr, const int port, const int buflen)
 {
     NetConn *net=NEW(NetConn);
     return netconn_init(net, family, addr, port, buflen);

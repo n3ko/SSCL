@@ -31,7 +31,7 @@ class NetServer;
 class NetConn {
     public:
 	NetConn() {netconn_init_server(&cs, NULL, 0, 0);}
-	NetConn(int family, const char *addr, const int port, const int buflen=SSCL_BUF_LEN)
+	NetConn(const NetConnFamily family, const char *addr, const int port, const int buflen=SSCL_BUF_LEN)
 		{netconn_init(&cs, family, addr, port, buflen);}
 	char *get_ip() {return netconn_get_ip(&cs);}
 	virtual ~NetConn() {netconn_done(&cs);}

@@ -169,3 +169,14 @@ int stream_put_s(Stream *s, const char *buffer)
 {
     return stream_write(s, buffer, str_len(buffer));
 }
+
+int stream_print(Stream *s, const char *format,...)
+{
+    int ret;
+    char buf[8001];
+    va_list args;
+    va_start(args, format);
+    ret=str_printv(buf, format, 8000, args);
+    va_end(args);
+    return ret;
+}

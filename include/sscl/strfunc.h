@@ -114,6 +114,16 @@ static inline char *str_chr(const char *s, const char c)
     else return CNULL;
 }
 
+static inline int str_chr_cnt(const char *s, const char c)
+{
+    int res=0;
+    while (*s) {
+	if (*s==c) res++;
+	s++;
+    }
+    return res;
+}
+
 static inline int str_len(const char *s)
 {
     register const char *p;

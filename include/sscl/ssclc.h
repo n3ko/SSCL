@@ -199,8 +199,7 @@ int stream_get_s_wait(Stream *s, char *buffer, int n);
 int stream_put_c(Stream *s, const char c);
 int stream_write(Stream *s, const char *buffer, int n);
 int stream_put_s(Stream *s, const char *buffer);
-//int stream_printf(Stream *s, const char *format, va_list args);
-//int stream_printf(Stream *s, const char *format,...);
+int stream_print(Stream *s, const char *format,...);
 
 //*********************
 // Network
@@ -209,6 +208,8 @@ typedef struct _NetConn NetConn;
 typedef struct _NetServer NetServer;
 #define NETCONN(x) ((NetConn*)x)
 #define NETSERVER(x) ((NetServer*)x)
+
+typedef enum {nf_inet, nf_unix} NetConnFamily;
 
 struct _NetConn {
     struct _Stream _parent;
@@ -222,10 +223,10 @@ struct _NetServer {
 //    AVLTree clients;
 };
 
-NetConn *netconn_init(NetConn *net, const int family, const char *addr,
+NetConn *netconn_init(NetConn *net, const NetConnFamily family, const char *addr,
 	const int port, const int buflen);
 NetConn *netconn_init_server(NetConn *net, NetServer *server, const int fd, const int buflen);
-NetConn *netconn_new(const int family, const char *addr, const int port, const int buflen);
+NetConn *netconn_new(const NetConnFamily family, const char *addr, const int port, const int buflen);
 void netconn_done(NetConn *net);
 void netconn_free(NetConn *net);
 char *netconn_get_ip(NetConn *net);
