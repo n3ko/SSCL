@@ -17,7 +17,7 @@ SSCL_OBJ = $(SSCL_SRC:sscl/%.cc=build/sscl/%.o)
 #	  o/sdt.o
 
 #---------------------------------------- Main rules
-all: build $(SSCLC_LIB) $(SSCL_AR) sscl.spec
+all: build $(SSCLC_LIB) $(SSCLC_SO_NAME) libssclc.so $(SSCL_AR) sscl.spec
 
 clean:
 	rm -rf build; rm -f core .depend libsscl.so* libssclc.so* libsscl.a

@@ -1,2 +1,2 @@
 include/sscl/*.h		usr/include/sscl
-libsscl.a libsscl.so		usr/lib
+libsscl.a libssclc.so		usr/lib
