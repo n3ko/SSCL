@@ -44,6 +44,10 @@ Hash *hash_init(Hash *hash, int size, HashFunc hash_func)
     return hash;
 }
 
+void hash_done(Hash *hash)
+{
+}
+
 static void rebuild_hash_table(Hash *hash)
 {
     int i, j;
@@ -65,6 +69,7 @@ const void *hash_get(const Hash *hash, const char *key)
 {
     int i, h=hash->hash_func(key) % hash->size;
     HashNode *node=hash->node[h];
+    if (!node) return NULL;
     for (i=0; str_cmp(node->entry[i].key, key) && i<node->count; i++);
     if (i<node->count) return node->entry[i].data;
     else return NULL;
@@ -94,4 +99,25 @@ void hash_set(Hash *hash, const char *key, const void *data)
 	    hash->node[h]=node;
 	}
     }
+}
+
+const void *hash_delete(const Hash *hash, const char *key)
+{
+    const void *ret;
+    int i, h=hash->hash_func(key) % hash->size;
+    HashNode *node=hash->node[h];
+    if (!node) return NULL;
+    for (i=0; str_cmp(node->entry[i].key, key) && i<node->count; i++);
+    if (i<node->count) {
+	int j;
+	ret=node->entry[i].data;
+	for (j=i+1; j<node->count; j++) node->entry[j-1]=node->entry[j];
+	node=mem_realloc_heap(node,
+		sizeof(HashNode)+(node->count)*sizeof(node->entry[0]),
+		sizeof(HashNode)+(node->count-1)*sizeof(node->entry[0]));
+	node->count--;
+	hash->node[h]=node;
+	return ret;
+    }
+    else return NULL;
 }
