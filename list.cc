@@ -66,11 +66,17 @@ List::Item *List::append(Object *item)
     return last;
 }
 
-Object *List::get(int num) {
+Object *List::get(int num)
+{
     Item *p;
     for (p=first; p && num>0; p=p->next) num--;
     if (p) return p->item;
     else return NULL;
+}
+
+int List::get_num()
+{
+    return num;
 }
 
 List::Iterator::Iterator()

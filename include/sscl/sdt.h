@@ -24,7 +24,9 @@
 //================================================================ Exceptions
 #define ERR_NET_BIND "F-SYS-0001"
 
-typedef enum { st_stopped='-', st_unrun='U', st_init='I', st_run='R', st_quit='Q'} SDTState;
+typedef enum { st_stopped='-', st_unrun='U',
+	st_preinit='i', st_init='I', st_run='R',
+	st_quit='Q', st_postquit='q'} SDTState;
 typedef enum { sr_none=' ', sr_start='+', sr_stop='-'} SDTRequest;
 typedef enum { sp_none,		// No protocol
 		sp_clc,		// Command-line compatibility

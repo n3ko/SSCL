@@ -51,6 +51,7 @@ class List: public Container {
 	~List();
 	Item *append(Object *item);
 	Object *get(int num);
+	int get_num();
     private:
 	Item *first;
 	Item *last;
