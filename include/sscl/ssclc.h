@@ -258,7 +258,7 @@ typedef int (GetCharFunc)(LexicalAnalyzer *la);
 typedef enum {t_eos=0,
 	t_dot='.', t_comma=',', t_colon=':', t_semicolon=';',
 	t_lparen='(', t_rparen=')', t_lbrace='{', t_rbrace='}', t_lbrac='[', t_rbrac=']',
-	t_string='"', t_char='\'',
+	t_string='"', t_sqstring='\'',
 	t_word=0x100, t_int, t_oper
 } Token;
 typedef enum {la_string, la_file} LexicalAnalyzerType;
@@ -305,6 +305,8 @@ Bool lexical_analyzer_parse_word(LexicalAnalyzer *la, const char *word);
 char *lexical_analyzer_parse_get_word(LexicalAnalyzer *la, char *buf,
 	const int n);
 char *lexical_analyzer_parse_get_string(LexicalAnalyzer *la, char *buf,
+	const int n);
+char *lexical_analyzer_parse_get_sstring(LexicalAnalyzer *la, Token token, char *buf,
 	const int n);
 int lexical_analyzer_get_c(LexicalAnalyzer *la);
 

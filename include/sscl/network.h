@@ -32,7 +32,13 @@ class NetConn {
     public:
 	NetConn() {netconn_init_server(&cs, NULL, 0, 0);}
 	NetConn(const NetConnFamily family, const char *addr, const int port, const int buflen=SSCL_BUF_LEN)
-		{netconn_init(&cs, family, addr, port, buflen);}
+	{
+	    errno=0;
+	    if (!netconn_init(&cs, family, addr, port, buflen)) {
+		throw Error("E-SYS", errno, errno ? strerror(errno) : "Unknown error",
+			"NetServer::NetServer");
+	    }
+	}
 	char *get_ip() {return netconn_get_ip(&cs);}
 	virtual ~NetConn() {netconn_done(&cs);}
 	virtual int get_c() {return stream_get_c(&cs._parent);}

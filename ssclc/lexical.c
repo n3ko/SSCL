@@ -162,7 +162,7 @@ Bool lexical_analyzer_parse_token(LexicalAnalyzer *la, Token tok)
 	    case t_eos: msg="end of stream"; break;
 	    case t_word: msg="word"; break;
 	    case t_string: msg="\""; break;
-	    case t_char: msg="\'"; break;
+	    case t_sqstring: msg="\'"; break;
 	    case t_int: msg="integer value"; break;
 	    case t_oper: msg="operator"; break;
 	    case t_dot: msg="dot"; break;
@@ -177,10 +177,10 @@ Bool lexical_analyzer_parse_token(LexicalAnalyzer *la, Token tok)
 	    case t_rbrac: msg="']'"; break;
 	}
 	//Error("E-LEX", "TOKEXP", "%s expected", msg);
-	return false;
+	return true;
     }
     lexical_analyzer_next(la);
-    return true;
+    return false;
 }
 
 Bool lexical_analyzer_parse_oper(LexicalAnalyzer *la, const char *oper)
@@ -216,7 +216,17 @@ char *lexical_analyzer_parse_get_word(LexicalAnalyzer *la, char *buf,
 char *lexical_analyzer_parse_get_string(LexicalAnalyzer *la, char *buf,
 	const int n)
 {
-    if (la->token==t_string) {
+    if (la->token==t_string || la->token==t_sqstring) {
+	char *ret=str_cpy(buf, la->v_str, n);
+	lexical_analyzer_next(la);
+	return ret;
+    } else return NULL;
+}
+
+char *lexical_analyzer_parse_get_sstring(LexicalAnalyzer *la, Token token, char *buf,
+	const int n)
+{
+    if (la->token==token) {
 	char *ret=str_cpy(buf, la->v_str, n);
 	lexical_analyzer_next(la);
 	return ret;

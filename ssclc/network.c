@@ -57,8 +57,8 @@ NetConn *netconn_init(NetConn *net, const NetConnFamily family, const char *addr
 	    close(fd); return NULL;
 	}
     } else return NULL;
-    fcntl(net->_parent.fd, F_SETFL, O_NONBLOCK);
     stream_init_fd(STREAM(net), fd, buflen);
+    fcntl(net->_parent.fd, F_SETFL, O_NONBLOCK);
     net->server=NULL;
     return net;
 }
