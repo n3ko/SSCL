@@ -34,16 +34,16 @@
 #define BUF_FREE(start, ptr) (sizeof(start)-((ptr)-(start)))
 
 #ifndef str_cpy
-#  define str_cpy(...) sscl_str_cpy(__VA_ARGS__)
+#  define str_cpy(d, s, n) sscl_str_cpy((d), (s), (n))
 #endif
 #ifndef str_ecpy
-#  define str_ecpy(...) sscl_str_ecpy(__VA_ARGS__)
+#  define str_ecpy(d, s, n) sscl_str_ecpy((d), (s), (n))
 #endif
 #ifndef str_tcpy
-#  define str_tcpy(...) sscl_str_tcpy(__VA_ARGS__)
+#  define str_tcpy(d, s, n) sscl_str_tcpy((d), (s), (n))
 #endif
 #ifndef str_cat
-#  define str_cat(...) sscl_str_cat(__VA_ARGS__)
+#  define str_cat(d, s, n) sscl_str_cat((d), (s), (n))
 #endif
 
 #ifdef __cplusplus

@@ -22,8 +22,6 @@
 #include <sscl/config.h>
 #include <sscl/strfunc.h>
 
-#define NEW(type) ((type *)malloc(sizeof(type)))
-
 #ifdef __cplusplus
 typedef bool Bool;
 extern "C" {
@@ -67,6 +65,7 @@ void *mem_alloc_heap(unsigned int size);
 void mem_free_heap(void *ptr, unsigned int size);
 void *mem_realloc_heap(void *ptr, unsigned int oldsize, unsigned int newsize);
 
+#define NEW(type) ((type *)malloc(sizeof(type)))
 #define NEW_H(type) (type*)mem_alloc_heap(sizeof(type))
 #define NEW_HV(type, num) (type*)mem_alloc_heap((num)*sizeof(type))
 #define FREE_H(ptr, size) mem_free_heap(ptr, size)

@@ -78,8 +78,8 @@ const void *hash_get(const Hash *hash, const char *key)
 void hash_set(Hash *hash, const char *key, const void *data)
 {
     int i, h=hash->hash_func(key) % hash->size;
-    fprintf(stderr, "hash('%s')=%d (%d)\n", key, h, hash->size);
     HashNode *node=hash->node[h];
+    fprintf(stderr, "hash('%s')=%d (%d)\n", key, h, hash->size);
     if (!node) {
 	node=mem_alloc_heap(sizeof(HashNode)+sizeof(node->entry[0]));
 	node->count=1;
