@@ -16,11 +16,7 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef _SSCL_STRFUNC_H_
-#define _SSCL_STRFUNC_H_
-
 #include <sscl/strfunc.h>
-#include <sscl/error.h>
 
 char *_str_tok_internal_ptr;
 char *_str_split_internal_ptr;
@@ -66,10 +62,14 @@ char *str_printv(char *dst, const char *s, int n, va_list args) {
 		    }
 		    break;
 		case 'd': d1=d;
-			d=str_itoa(d, n, va_arg(args, int), 0); n-=(d-d1);
+			d=str_itoa(d, n, va_arg(args, int), 0, 10); n-=(d-d1);
 			break;
-		default:
-			throw Error("E-STR", "TYPCHR", "Invalid type char '%c'", *s);
+		case 'x': d1=d;
+			  *d++='0'; *d++='x';
+			d=str_itoa(d, n, va_arg(args, int), 0, 16); n-=(d-d1);
+			break;
+		default:;
+//			throw Error("E-STR", "TYPCHR", "Invalid type char '%c'", *s);
 	    }
 	    s++;
 	} else *d++=*s++, n--;
@@ -87,5 +87,3 @@ char *str_print(char *dst, const char *s, int n,...) {
     va_end(args);
     return p;
 }
-
-#endif /* _SSCL_STRFUNC_H_ */

@@ -25,6 +25,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+namespace SSCL {
+
 /*
  * Symbion Deamon Tools communication commands:
  *   QUERY:	Ask information about supported commands
@@ -51,7 +53,7 @@ void SDTConn::send(char *format,...)
     va_start(args, format);
     str_printv(buf, format, 1000, args);
     va_end(args);
-    out.write(buf);
+    out.put_s(buf);
     out.put_c('\n');
 }
 
@@ -120,3 +122,5 @@ void SDTConn::status_event()
 	default:;
     }
 }
+
+} /* namespace SSCL */

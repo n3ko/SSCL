@@ -19,7 +19,7 @@
  * Copyright (C) 1998,2001  Michael H. Buselli
  * zAVLTree.c: Source code for zAVLTrees.
  * This is version 0.1.3 (alpha).
- * Generated from $Id: avltree.h,v 1.2 2004/04/11 09:45:17 szilu Exp $
+ * Generated from $Id: avltree.h,v 1.3 2005/03/18 12:32:51 szilu Exp $
  *
  * The author of AVLTree can be reached at the following address:
  * Michael H. Buselli
@@ -34,6 +34,8 @@
 #define _AVLTREE_H_
 
 #include <sscl/object.h>
+
+namespace SSCL {
 
 // ============================================================ AVLTree
 /* typedef the keytype */
@@ -91,4 +93,5 @@ class AVLTree: public Container {
 		AVLNode *left, AVLNode *right);
 };
 
+} /* namespace SSCL */
 #endif /* _AVLTREE_H_ */

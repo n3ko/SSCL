@@ -19,44 +19,36 @@
 #ifndef _SSCL_LIST_H_
 #define _SSCL_LIST_H_
 
-#include <sscl/object.h>
+#include <sscl/ssclc.h>
+
+namespace SSCL {
 
 // ============================================================ List
 class List: public Container {
     public:
 	class Iterator;
-	class Item {
-	    public:
-		Item(Object *obj);
-		Object *get();
-	    private:
-		Object *item;
-		Item *next;
-		Item *prev;
-		friend class List;
-		friend class Iterator;
-	};
 	class Iterator {
 	    public:
-		Iterator();
-		Iterator(Item *it);
-		Object *next();
-		Object *get();
-		Object *operator++() {return next();};
+		Iterator(ListItem *it) {curitem=it;}
+		void *next() {curitem=curitem->next; return curitem->data;}
+		void *get() {return curitem->data;}
+		void *operator++() {return next();};
 	    private:
-		Item *curitem;
+		ListItem *curitem;
 		friend class List;
 	};
-	List(char *nam="", bool master=true);
-	~List();
-	Item *append(Object *item);
-	Object *get(int num);
-	int get_num();
+	List() {list_init(&cs);}
+	~List() {list_done(&cs);}
+	void append(void *ptr) {list_append(&cs, ptr);}
+	void push(void *ptr) {list_push(&cs, ptr);}
+	void *pop() {return list_pop(&cs);}
+	void *get(int n) {return list_get(&cs, n);}
+	int get_num() {return list_get_num(&cs);}
+	Iterator *first() {return new Iterator(cs.first);}
     private:
-	Item *first;
-	Item *last;
-	Item *cursor;
-	int num;
+	::List cs;
 };
+
+} /* namespace SSCL */
 
 #endif /* _SSCL_LIST_H_ */

@@ -19,6 +19,7 @@
 #ifndef _SSCL_STRFUNC_H
 #define _SSCL_STRFUNC_H
 
+#include <stdlib.h>
 #include <stdarg.h>
 
 #ifndef NULL
@@ -31,6 +32,10 @@
 
 #define BUF_FREE_S(start, ptr, size) ((size)-((ptr)-(start)))
 #define BUF_FREE(start, ptr) (sizeof(start)-((ptr)-(start)))
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 //=============================================================================
 //	String functions
@@ -75,6 +80,12 @@ static inline char *str_tcpy(char *d, const char *s, int n)
     return d;
 }
 
+static inline char *str_cat(char *d, const char *s, int n)
+{
+    while (*d) d++;
+    return str_cpy(d, s, n);
+}
+
 static inline char *str_end(char *s)
 {
     while (*s) s++;
@@ -114,16 +125,17 @@ static inline char *str_dup(const char *s)
 {
     if (s) {
 	register int l=str_len(s);
-	register char *d=new char[l+1];
-	str_cpy(d, s, l);
+	register char *d=(char*)malloc(l+1);
+	if (d) str_cpy(d, s, l);
 	return d;
     } else return CNULL;
 }
 
-static inline void str_chomp(char *s, const char *chset="\r\n")
+static inline void str_chomp(char *s, const char *chset)
 {
+    register const char *chs=chset?chset:"\r\n";
     register char *p=s+str_len(s)-1;
-    while (p>=s && str_chr(chset, *p)) p--;
+    while (p>=s && str_chr(chs, *p)) p--;
     *p=0;
 }
 
@@ -166,7 +178,7 @@ static inline char *str_tok(char *s, const char *delim)
     while (*_str_tok_internal_ptr && !str_chr(delim, *_str_tok_internal_ptr))
 	_str_tok_internal_ptr++;
     if (!*_str_tok_internal_ptr++) return s;
-    *_str_tok_internal_ptr++=0;
+   *_str_tok_internal_ptr++=0;
     return s;
 }
 
@@ -198,9 +210,13 @@ static inline char *str_cut(char *dst, char *src, const char *delim, int length)
     return dst;
 }
 
-char *str_itoa(char *d, int n, int i, const char fill, int base=10);
+char *str_itoa(char *d, int n, int i, const char fill, int base);
 
 char *str_printv(char *dst, const char *s, int n, va_list args);
 char *str_print(char *dst, const char *s, int n,...);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _SSCL_STRFUNC_H */

@@ -21,4 +21,9 @@
 
 #define SSCL_BUF_LEN 1024
 
+// Machine word size in bytes and its logarithm
+#define WORD_SIZE 4
+#define WORD_SIZE_LOG2 2
+
+
 #endif /* _SSCL_CONFIG_H */

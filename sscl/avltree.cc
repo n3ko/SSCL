@@ -19,14 +19,14 @@
  * Copyright (C) 1998,2001  Michael H. Buselli
  * zAVLTree.c: Source code for zAVLTrees.
  * This is version 0.1.3 (alpha).
- * Generated from $Id: avltree.cc,v 1.3 2004/11/12 14:15:21 szilu Exp $
+ * Generated from $Id: avltree.cc,v 1.1 2005/03/18 12:32:51 szilu Exp $
  *
  * The author of AVLTree can be reached at the following address:
  * Michael H. Buselli
  * 30051 N. Waukegan Rd. Apt. 103
  * Lake Bluff, IL  60044-5412
  *
- * Or you can send email to <cosine@cosine.org>.
+ * Or you can send email to cosine at cosine dot org.
  * The official web page for this product is:
  * http://www.cosine.org/project/AVLTree/
  */
@@ -38,6 +38,8 @@
 #define L_DEPTH(n)     ((n)->left ? (n)->left->depth : 0)
 #define R_DEPTH(n)     ((n)->right ? (n)->right->depth : 0)
 #define CALC_DEPTH(n)  (MAX(L_DEPTH(n), R_DEPTH(n)) + 1)
+
+namespace SSCL {
 
 AVLTree::AVLTree(char *nam, bool master): Container(nam, master)
 {
@@ -404,3 +406,5 @@ void AVLTree::fill_vacancy(AVLNode *origparent, AVLNode **superparent,
 	rebalance_node(balnode);
     }
 }
+
+} /* namespace SSCL */

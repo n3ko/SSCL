@@ -2,10 +2,12 @@ PREFIX = /usr
 
 MAJOR_VERSION = 0
 MINOR_VERSION = 9
-MICRO_VERSION = 4
+MICRO_VERSION = 5
 
 VERSION = ${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}
-SO_NAME = libsscl.so.${MAJOR_VERSION}.${MINOR_VERSION}
+SSCLC_SO_NAME = libssclc.so.${MAJOR_VERSION}.${MINOR_VERSION}
+SSCL_AR_NAME = libsscl.a
+SSCL_SO_NAME = libsscl.so.${MAJOR_VERSION}.${MINOR_VERSION}
 
 CC = gcc
 LD = gcc
@@ -14,10 +16,17 @@ LN_S = ln -s
 LIBDIR = $(PREFIX)/lib
 INCLUDEDIR = $(PREFIX)/include/sscl
 
+CINCLUDE = -I./include
+CFLAGS = -Wall -g3 -fPIC
+CLDFLAGS = -shared -soname $(SSCLC_SO_NAME)
+COPTS = $(CFLAGS) $(CINCLUDE)
+CLDLIBS = -L/usr/lib
+CLDOPTS = $(CLDFLAGS) $(CLDLIBS)
+
 CCINCLUDE = -I./include
 CCFLAGS = -Wall -g3 -fPIC
 #-fexceptions -enable-exceptions
-LDFLAGS = -shared -soname $(SO_NAME)
+CCLDFLAGS = -shared -soname $(SSCL_SO_NAME)
 CCOPTS = $(CCFLAGS) $(CCINCLUDE)
-LDLIBS = -L/usr/lib -lc
-LDOPTS = $(LDFLAGS) $(LDLIBS)
+CCLDLIBS = -L/usr/lib -Lbuild/sscl -lssclc
+CCLDOPTS = $(CCLDFLAGS) $(CCLDLIBS)

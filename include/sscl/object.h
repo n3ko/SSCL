@@ -21,6 +21,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+namespace SSCL {
+
 // ============================================================= Object
 class Object {
     public:
@@ -41,4 +43,5 @@ class Container: public Object {
 	bool master;
 };
 
+} /* namespace SSCL */
 #endif /* _SSCL_OBJECT_H_ */

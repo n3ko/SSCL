@@ -16,26 +16,42 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <sscl/object.h>
+#include <errno.h>
 
-// ============================================================= Object
-Object::Object(char *nam)
+#include <sscl/error.h>
+#include <sscl/stream.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+namespace SSCL {
+
+NullStream::NullStream(const int fd)
 {
-    name=strdup(nam);
+    stream_init_fd(&cs, fd, 0);
 }
 
-Object::~Object()
+NullStream::NullStream(const char *file, const int flags)
 {
-    delete name;
+    stream_init_file(&cs, file, flags, 0);
 }
 
-char *Object::get_name()
+InStream::InStream(const int fd, const int len): NullStream(fd)
 {
-    return name;
+    stream_init_fd(&cs, fd, len);
 }
 
-// ============================================================ Container
-Container::Container(char *nam, bool mstr): Object(nam)
+InStream::InStream(const char *file, const int flags, const int len): NullStream(file, flags)
 {
-    master=mstr;
+    stream_init_file(&cs, file, flags, len);
 }
+
+OutStream::OutStream(int fd, const int len): NullStream(fd)
+{
+    stream_init_fd(&cs, fd, len);
+}
+
+Stream::Stream(int fd, const int ilen, const int olen):
+	NullStream(fd), InStream(fd, ilen), OutStream(fd) {}
+
+} /* namespace SSCL */

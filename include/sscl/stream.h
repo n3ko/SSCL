@@ -25,54 +25,55 @@
 
 //#include <sscl/base.h>
 #include <sscl/config.h>
-#include <sscl/object.h>
+#include <sscl/ssclc.h>
+
+namespace SSCL {
 
 class NullStream {
     public:
-	NullStream(const int f);
+	NullStream(const int fd);
 	NullStream(const char *file, const int flags);
-	~NullStream();
-	//NullStream(char *file);
-	int get_fd();
+//	NullStream(const int fd) {stream_init_fd(&cs, fd, 0);}
+//	NullStream(const char *file, const int flags) {stream_init_file(&cs, file, flags, 0);}
+	~NullStream() {stream_done(&cs);}
+	int get_fd() {return cs.fd;}
     protected:
-	int fd;
+	Stream cs;
 };
 
 class InStream: virtual public NullStream {
     public:
-	InStream(const int f, const int len=SSCL_BUF_LEN);
-	InStream(const char *file, const int len=SSCL_BUF_LEN);
-	virtual ~InStream();
-	virtual int get_c();
-	virtual int get_c_wait();
-	int get_s(char *buffer, int n);
-	int get_s_wait(char *buffer, int n);
-    protected:
-	int try_read();
-	// Representation:
-	//	[X][X][X][ ][ ][ ][X][X][X][X]
-	//	          ^iend    ^ibegin
-	int ibufl;
-	char *ibuf;
-	char *ibegin;
-	int icnt;
-	char *inl;
+	InStream(const int fd, const int len=SSCL_BUF_LEN);
+	InStream(const char *file, const int flags, const int len=SSCL_BUF_LEN);
+//	InStream(const int fd, const int len=SSCL_BUF_LEN): NullStream(fd)
+//		{stream_init_fd(&cs, fd, len);}
+//	InStream(const char *file, const int flags, const int len=SSCL_BUF_LEN): NullStream(file, flags)
+//		{stream_init_file(&cs, file, flags, len);}
+	virtual ~InStream() {stream_done(&cs);}
+	virtual int get_c() {return stream_get_c(&cs);}
+	virtual int get_c_wait() {return stream_get_c_wait(&cs);}
+	int get_s(char *buffer, int n) {return stream_get_s(&cs, buffer, n);}
+	int get_s_wait(char *buffer, int n) {return stream_get_s_wait(&cs, buffer, n);}
 };
 
 class OutStream: virtual public NullStream {
     public:
-	OutStream(int f, const int len=SSCL_BUF_LEN);
-	virtual ~OutStream();
-	virtual int put_c(const char c);
-	virtual int write(const char *buffer, int n);
-	virtual int write(const char *buffer);
-    protected:
+	OutStream(int fd, const int len=SSCL_BUF_LEN);
+//	OutStream(int fd, const int len=SSCL_BUF_LEN): NullStream(fd)
+//		{stream_init_fd(&cs, fd, len);}
+	virtual ~OutStream() {}
+	virtual int put_c(const char c) {return stream_put_c(&cs, c);}
+	virtual int write(const char *buffer, int n) {return stream_write(&cs, buffer, n);}
+	virtual int put_s(const char *buffer) {return stream_put_s(&cs, buffer);}
 };
 
 class Stream: public InStream, public OutStream {
     public:
-	Stream(int f, const int ilen=SSCL_BUF_LEN, const int olen=SSCL_BUF_LEN);
-    protected:
+	Stream(int fd, const int ilen=SSCL_BUF_LEN, const int olen=SSCL_BUF_LEN);
+//	Stream(int fd, const int ilen=SSCL_BUF_LEN, const int olen=SSCL_BUF_LEN):
+//		NullStream(fd), InStream(fd, ilen), OutStream(fd) {}
 };
+
+} /* namespace SSCL */
 
 #endif /* _SSCL_STREAM_H */

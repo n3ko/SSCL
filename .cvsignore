@@ -1,1 +1,1 @@
-libsscl.so* sscl.spec o build-stamp
+libsscl.so* libssclc.so* libsscl.a* sscl.spec build build-stamp .*.swp

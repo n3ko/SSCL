@@ -1,4 +1,11 @@
-2004-03-12 15:05:42    
+2005-03-16 18:08:23    Szilard Hajba <szilu@symbion.hu>
+
+	* C language functions: ssclc.h
+	* C++ classes are based on SSCLC structures and functions
+	* C++ classes were moved to SSCL namespace
+	* Stream.write(char*) renamed to put_s(char*)
+
+2004-03-12 15:05:42    Szilard Hajba <szilu@symbion.hu>
 
 	* version 0.9.4
 	* First public release

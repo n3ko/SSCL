@@ -1,24 +1,36 @@
 include Makefile.global
 
-TARGET = libsscl.so.$(VERSION)
-OBJECTS = o/strfunc.o o/error.o o/object.o o/list.o o/avltree.o \
-	  o/stream.o o/network.o o/lexical.o \
-	  o/sdt.o
+SSCLC_LIB = libssclc.so.$(VERSION)
+SSCL_AR = libsscl.a
+SSCL_LIB = libsscl.so.$(VERSION)
+
+SSCLC_SRC = $(wildcard ssclc/*.c)
+SSCL_SRC = $(wildcard sscl/*.cc)
+
+SSCLC_OBJ = $(SSCLC_SRC:ssclc/%.c=build/ssclc/%.o)
+SSCL_OBJ = $(SSCL_SRC:sscl/%.cc=build/sscl/%.o)
+
+#SSCLC_OBJ = ssclc/o/strfunc.o o/list.o o/avltree.o o/stream.o \
+#	o/network.o o/lexical.o
+#SSCL_OBJ = o/strfunc.o o/error.o o/object.o o/list.o o/avltree.o \
+#	  o/stream.o o/network.o o/lexical.o \
+#	  o/sdt.o
 
 #---------------------------------------- Main rules
-all: o $(TARGET) $(SO_NAME) libsscl.a sscl.spec #libsscl.so
+all: build $(SSCLC_LIB) $(SSCL_AR) sscl.spec
 
 clean:
-	rm -rf o; rm -f core .depend libsscl.so* libsscl.a
+	rm -rf build; rm -f core .depend libsscl.so* libssclc.so* libsscl.a
 
 depend:
 	gcc -M -MM $(CCINCLUDE) *.cc |sed 's/^/o\//' >.depend
 	@echo "Dependencies were remade, type \`make' to make the binaries!"
 
 install_root:
-	$(INSTALL) --mode 0755 $(TARGET) libsscl.a $(LIBDIR)
-	(cd $(LIBDIR) && $(LN_S) -f $(TARGET) $(SO_NAME))
-	(cd $(LIBDIR) && $(LN_S) -f $(TARGET) libsscl.so)
+	#$(INSTALL) --mode 0755 $(SSCLC_LIB) $(SSCL_LIB) $(LIBDIR)
+	$(INSTALL) --mode 0755 $(SSCLC_LIB) $(SSCL_AR) $(LIBDIR)
+	(cd $(LIBDIR) && $(LN_S) -f $(SSCLC_LIB) $(SSCLC_SO_NAME))
+	(cd $(LIBDIR) && $(LN_S) -f $(SSCLC_LIB) libssclc.so)
 	mkdir -p $(INCLUDEDIR)
 	$(INSTALL) --mode 0644 include/sscl/*.h $(INCLUDEDIR)
 
@@ -38,26 +50,34 @@ ifneq (,$(wildcard .depend))
     include .depend
 endif
 
-o:
-	mkdir $@
+build:
+	@echo "[1mPreparing build environment..[0m"
+	@mkdir build; mkdir build/ssclc build/sscl
 
 #---------------------------------------- Template rules
-$(TARGET): $(OBJECTS)
-	ld $(LDOPTS) -o $@ $(OBJECTS)
-#	$(LD) $(LDOPTS) -o $@ $<
+$(SSCLC_LIB): $(SSCLC_OBJ)
+	ld $(CLDOPTS) -o $@ $(SSCLC_OBJ)
 
-libsscl.a: $(OBJECTS)
-	ar cru $@ $(OBJECTS)
+$(SSCL_AR): $(SSCL_OBJ)
+	ar cru $@ $(SSCL_OBJ)
 	ranlib $@
+$(SSCL_LIB): $(SSCL_OBJ)
+	ld $(CCLDOPTS) -o $@ $(SSCL_OBJ)
 
-o/%.o: %.cc
+$(SSCLC_SO_NAME):
+	$(LN_S) -f $(SSCLC_LIB) $@
+libssclc.so:
+	$(LN_S) -f $(SSCLC_LIB) $@
+#libsscl.so:
+#	$(LN_S) -f $(TARGET) libsscl.so
+#$(SO_NAME):
+#	$(LN_S) -f $(TARGET) $(SO_NAME)
+
+build/ssclc/%.o: ssclc/%.c
+	$(CC) $(COPTS) -c -o $@ $<
+
+build/sscl/%.o: sscl/%.cc
 	$(CC) $(CCOPTS) -c -o $@ $<
-
-$(SO_NAME):
-	$(LN_S) -f $(TARGET) $(SO_NAME)
-
-libsscl.so:
-	$(LN_S) -f $(TARGET) libsscl.so
 
 sscl.spec: sscl.spec.in
 	sed -e "s/_VER_/$(VERSION)/" -e "s!_PREFIX_!$(PREFIX)!" <sscl.spec.in >sscl.spec

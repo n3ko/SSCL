@@ -23,34 +23,43 @@
 #include <sscl/error.h>
 #include <sys/socket.h>
 
-//================================================================ Exceptions
-#define ERR_NET_BIND "F-SYS-0001"
+namespace SSCL {
 
 class NetConn;
-class NetServer/*: public AVLTree*/ {
+class NetServer;
+
+class NetConn {
     public:
-	NetServer(int family, char *addr, int port, int max_conn, int flags=0);
-	~NetServer();
-	NetConn *accept(int flags=0);
-	void NetServer::add(int s, NetConn *cl);
-	void remove(int s);
+	NetConn() {netconn_init_server(&cs, NULL, 0, 0);}
+	NetConn(int family, const char *addr, const int port, const int buflen=SSCL_BUF_LEN)
+		{netconn_init(&cs, family, addr, port, buflen);}
+	char *get_ip() {return netconn_get_ip(&cs);}
+	virtual ~NetConn() {netconn_done(&cs);}
+	virtual int get_c() {return stream_get_c(&cs._parent);}
+	virtual int get_c_wait() {return stream_get_c_wait(&cs._parent);}
+	int get_s(char *buffer, int n) {return stream_get_s(&cs._parent, buffer, n);}
+	int get_s_wait(char *buffer, int n) {return stream_get_s_wait(&cs._parent, buffer, n);}
+	virtual int put_c(const char c) {return stream_put_c(&cs._parent, c);}
+	virtual int write(const char *buffer, int n) {return stream_write(&cs._parent, buffer, n);}
+	virtual int put_s(const char *buffer) {return stream_put_s(&cs._parent, buffer);}
     private:
-	int sock;
-	int clientnum;
-	char *address;
-//	map<int, NetConn*> client;
+	friend class NetServer;
+	::NetConn cs;
 };
 
-class NetConn: public Stream {
+class NetServer/*: public AVLTree*/ {
     public:
-	NetConn(NetServer *serv, const int s, const int len=SSCL_BUF_LEN);
-	NetConn(int family, const char *addr, const int port, const int len=SSCL_BUF_LEN);
-	char *get_ip();
-	~NetConn();
-//	void send(string text);
-//	char *recv();
+	NetServer(int family, char *addr, int port, int max_conn, int flags=0)
+		{netserver_init(&cs, family, addr, port, max_conn, flags);}
+	~NetServer() {netserver_done(&cs);}
+	NetConn *accept(int flags=0, int buflen=SSCL_BUF_LEN)
+		{NetConn *nc=new NetConn; return netserver_accept(&cs, &nc->cs, flags, buflen) ? nc : NULL;}
+	//void NetServer::add(int s, NetConn *cl);
+	void remove(int s) {netserver_remove(&cs, s);}
     private:
-	NetServer *server;
+	::NetServer cs;
 };
+
+} /* namespace SSCL */
 
 #endif /* _SSCL_NETWORK_H */

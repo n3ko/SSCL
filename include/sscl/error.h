@@ -21,6 +21,8 @@
 #include <sscl/stream.h>
 #include <stdarg.h>
 
+namespace SSCL {
+
 class Error {
     public:
 //	Error(const char *lvl, const char *i, const char *fnc, const char *txt);
@@ -43,4 +45,5 @@ class Error {
 #define IS_ALPHA(c) (((c)>='a'&&(c)<='z')||((c)>='A'&&(c)<='Z')||(c)=='_')
 #define IS_SPACE(c) ((c)==' '||(c)=='\t')
 
+} /* namespace SSCL */
 #endif /* _SSCL_BASE_H */

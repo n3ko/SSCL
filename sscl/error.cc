@@ -20,6 +20,8 @@
 #include <sscl/strfunc.h>
 #include <stdio.h>
 
+namespace SSCL {
+
 /*
 Error::Error(const char *lvl, const char *i, const char *fnc, const char *txt)
 {
@@ -82,3 +84,5 @@ char *Error::format() {
 	    func?func:"", func?"(): ":"", text);
     return errstr;
 }
+
+} /* namespace SSCL */
