@@ -37,6 +37,13 @@ install_root:
 install: all
 	@if [ $$UID != '0' ]; then echo "Root password is required.."; su -c '${MAKE}  install_root'; else ${MAKE} install_root; fi
 
+uninstall_root:
+	rm -f $(LIBDIR)/libssclc.so* $(LIBDIR)/libsscl.a
+	rm -rf $(INCLUDEDIR)
+
+uninstall:
+	@if [ $$UID != '0' ]; then echo "Root password is required.."; su -c '${MAKE}  uninstall_root'; else ${MAKE} install_root; fi
+
 rpm_root: install sscl.spec
 	rpm -bb sscl.spec
 
