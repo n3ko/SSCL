@@ -19,7 +19,7 @@
  * Copyright (C) 1998,2001  Michael H. Buselli
  * zAVLTree.c: Source code for zAVLTrees.
  * This is version 0.1.3 (alpha).
- * Generated from $Id: avltree.cc,v 1.2 2004/03/05 19:33:17 szilu Exp $
+ * Generated from $Id: avltree.cc,v 1.3 2004/11/12 14:15:21 szilu Exp $
  *
  * The author of AVLTree can be reached at the following address:
  * Michael H. Buselli
@@ -50,7 +50,7 @@ AVLTree::~AVLTree()
     if (top) delete top;
 }
 
-int AVLTree::insert(Object *item, AVLKey key=NULL)
+int AVLTree::insert(Object *item, AVLKey key)
 {
     AVLNode *newnode;
     AVLNode *node;

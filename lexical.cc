@@ -22,7 +22,7 @@
 
 #define LA_OPERATOR_CHARS "=<>~!@$%^&*-+|/?"
 
-LexicalAnalyzer::LexicalAnalyzer(const int len=SSCL_BUF_LEN)
+LexicalAnalyzer::LexicalAnalyzer(const int len)
 {
     v_str_size=len;
     v_str=new char[len+1];
@@ -174,7 +174,7 @@ int LexicalAnalyzer::get_c()
     return rc;
 }
 
-StrLexicalAnalyzer::StrLexicalAnalyzer(const char *src, const int len=SSCL_BUF_LEN):
+StrLexicalAnalyzer::StrLexicalAnalyzer(const char *src, const int len):
 	LexicalAnalyzer(len)
 {
     ptr=src; c=f_get_c(); next();

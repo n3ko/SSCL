@@ -29,13 +29,13 @@
 #include <errno.h>
 
 //----------------------------------------------------------- class NetConn
-NetConn::NetConn(NetServer *serv, const int s, const int len=SSCL_BUF_LEN):
+NetConn::NetConn(NetServer *serv, const int s, const int len):
 	NullStream(s), Stream(s, len, 0)
 {
     server=serv;
 }
 
-NetConn::NetConn(int family, const char *addr, const int port, const int len=SSCL_BUF_LEN):
+NetConn::NetConn(int family, const char *addr, const int port, const int len):
 	NullStream(-1), Stream(-1, len, 0)
 {
     if (family==AF_INET) { // Inet socket
