@@ -16,7 +16,8 @@ INCLUDEDIR = $(PREFIX)/include/sscl
 
 CCINCLUDE = -I./include
 CCFLAGS = -Wall -g3 -fPIC
+#-fexceptions -enable-exceptions
 LDFLAGS = -shared -soname $(SO_NAME)
 CCOPTS = $(CCFLAGS) $(CCINCLUDE)
-LDLIBS = -L/usr/lib -lc -ldl
+LDLIBS = -L/usr/lib -lc
 LDOPTS = $(LDFLAGS) $(LDLIBS)
