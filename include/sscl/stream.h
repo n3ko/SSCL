@@ -43,7 +43,9 @@ class InStream: virtual public NullStream {
 	InStream(const char *file, const int len=SSCL_BUF_LEN);
 	virtual ~InStream();
 	virtual int get_c();
+	virtual int get_c_wait();
 	int get_s(char *buffer, int n);
+	int get_s_wait(char *buffer, int n);
     protected:
 	int try_read();
 	// Representation:
@@ -52,7 +54,6 @@ class InStream: virtual public NullStream {
 	int ibufl;
 	char *ibuf;
 	char *ibegin;
-//	char *iend;
 	int icnt;
 	char *inl;
 };
@@ -72,25 +73,5 @@ class Stream: public InStream, public OutStream {
 	Stream(int f, const int ilen=SSCL_BUF_LEN, const int olen=SSCL_BUF_LEN);
     protected:
 };
-
-/*
-class Stream: public InStream, public OutStream {
-    public:
-	Stream(int f, const int len);
-	virtual ~Stream() {delete buf;};
-	virtual int get_c();
-	int get_s(char *buffer, int n);
-	virtual int put_c(const char c) {return ::write(fd, &c, 1);};
-	virtual int write(const char *buffer, int n) {return ::write(fd, buffer, n);};
-	virtual int write(const char *buffer) {return ::write(fd, buffer, strlen(buffer));};
-	int get_fd() {return fd;};
-    protected:
-	int fd;
-	int buflen;
-	char *buf;
-	char *end;
-	char *p;
-};
-*/
 
 #endif /* _SSCL_STREAM_H */

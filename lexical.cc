@@ -45,13 +45,13 @@ Token LexicalAnalyzer::next()
 		|| c=='_') && v_str_len<v_str_size) {
 	    v_str[v_str_len++]=c; c=get_c();
 	}
-	if (v_str_len>=v_str_size) throw new Error("E-LEX", "WRDLEN", "Word too long");
+	if (v_str_len>=v_str_size) throw Error("E-LEX", "WRDLEN", "Word too long");
 	token=t_word; v_str[v_str_len]=0; return token;
     } else if ('0'<=c && c<='9') {
 	while  ('0'<=c && c<='9' && v_str_len<v_str_size) {
 	    v_str[v_str_len++]=c; c=get_c();
 	}
-	if (v_str_len>=v_str_size) throw new Error("E-LEX", "NUMLEN", "Number too long");
+	if (v_str_len>=v_str_size) throw Error("E-LEX", "NUMLEN", "Number too long");
 	v_str[v_str_len]=0; v_int=atoi(v_str);
 	token=t_int;
     } else if (c=='"' || c=='\'') {
@@ -68,8 +68,8 @@ Token LexicalAnalyzer::next()
 	    }
 	    v_str[v_str_len++]=c; c=get_c();
 	}
-	if (v_str_len>=v_str_size) throw new Error("E-LEX", "STRLEN", "String too long");
-	if (!c) throw new Error("E-LEX", "STRCLS", "String constant is open");
+	if (v_str_len>=v_str_size) throw Error("E-LEX", "STRLEN", "String too long");
+	if (!c) throw Error("E-LEX", "STRCLS", "String constant is open");
 	c=get_c(); v_str[v_str_len]=0;
 	token=t_string;
     } else if (c==EOF) {
@@ -78,7 +78,7 @@ Token LexicalAnalyzer::next()
 	while (strchr(LA_OPERATOR_CHARS, c) && v_str_len<v_str_size) {
 	    v_str[v_str_len++]=c; c=get_c();
 	}
-	if (v_str_len>=v_str_size) throw new Error("E-LEX", "OPRLEN", "Operator too long");
+	if (v_str_len>=v_str_size) throw Error("E-LEX", "OPRLEN", "Operator too long");
 	v_str[v_str_len]=0;
 	token=t_oper;
     } else switch (c) {
@@ -92,7 +92,7 @@ Token LexicalAnalyzer::next()
 	case '}': token=t_closebr; c=get_c(); break;
 	case '[': token=t_opensqbr; c=get_c(); break;
 	case ']': token=t_closesqbr; c=get_c(); break;
-	default: throw new Error("E-LEX", 0, "Parse error at or near '%c'", c);
+	default: throw Error("E-LEX", 0, "Parse error at or near '%c'", c);
     }
     return token;
 }
@@ -121,20 +121,20 @@ void LexicalAnalyzer::parse_token(Token tok)
 	    case t_opensqbr: msg="'['"; break;
 	    case t_closesqbr: msg="']'"; break;
 	}
-	throw new Error("E-LEX", "TOKEXP", "%s expected", msg);
+	throw Error("E-LEX", "TOKEXP", "%s expected", msg);
     }
 }
 
 void LexicalAnalyzer::parse_oper(const char *oper)
 {
     if (next()!=t_oper || str_cmp(v_str, oper))
-	throw new Error("E-LEX", "EXPOPR", "operator '%s' expected", oper);
+	throw Error("E-LEX", "EXPOPR", "operator '%s' expected", oper);
 }
 
 void LexicalAnalyzer::parse_word(const char *word)
 {
     if (next()!=t_word || str_cmp(v_str, word))
-	throw new Error("E-LEX", "EXPWRD", "word '%s' expected", word);
+	throw Error("E-LEX", "EXPWRD", "word '%s' expected", word);
 }
 
 char *LexicalAnalyzer::parse_get_word(char *buf, const int n)

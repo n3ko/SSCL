@@ -61,7 +61,7 @@ InStream::~InStream()
 /**/
 int InStream::try_read()
 {
-    // Read from the socket if data is available
+    // Read from the file if data is available
     register int r;
     bool eof=false;
     do {
@@ -78,14 +78,14 @@ int InStream::try_read()
 	    if (!r) eof=true;
 	}
 	if (r>0) icnt+=r;
-	else if (r<0 && errno!=EAGAIN) throw new Error("F-SYS", errno, "read", sys_errlist[errno]);
+	else if (r<0 && errno!=EAGAIN) throw Error("F-SYS", errno, "read", sys_errlist[errno]);
     } while (r>0);
     return eof ? -1 : 0;
 }
 
 int InStream::get_c()
 {
-    bool eof;
+    bool eof=false;
     int ret;
     if (!icnt) eof=try_read();
     if (icnt--) {
@@ -96,6 +96,13 @@ int InStream::get_c()
     }
     if (eof) return EOF;
     else return 0;
+}
+
+int InStream::get_c_wait()
+{
+    int c;
+    while (!(c=get_c())) usleep(100);
+    return c;
 }
 
 #define ENDL(x) ((x)=='\n')
@@ -128,6 +135,13 @@ int InStream::get_s(char *buffer, int n)
     }
 }
 
+int InStream::get_s_wait(char *buffer, int n)
+{
+    int s;
+    while (!(s=get_s(buffer, n))) usleep(100);
+    return s;
+}
+
 OutStream::OutStream(const int f, const int len): NullStream(f)
 {
 }
@@ -155,77 +169,3 @@ Stream::Stream(int f, const int ilen, const int olen):
 	NullStream(f), InStream(f, ilen), OutStream(f, olen)
 {
 }
-/**/
-/*
-int InStream::try_read()
-{
-    // Read from the socket if data is available
-    register int r, n;
-    bool eof=false;
-    do {
-	r=0;
-	if (ibegin<=iend) {
-	    if (iend<ibuf+ibufl) {
-		if ((n=ibuf+ibufl-iend-(ibegin==ibuf?1:0))) {
-		    r=::read(fd, iend, n);
-		    if (!r) eof=true;
-		}
-	    }
-	} else {
-	    if ((n=ibegin-iend-1)) {
-		r=::read(fd, iend, n);
-		if (!r) eof=true;
-	    }
-	}
-	if (r>0) iend+=r;
-	else if (r<0 && errno!=EAGAIN) throw new Error("F-SYS", errno, "read", sys_errlist[errno]);
-	if (iend==ibuf+ibufl) {
-	    iend=ibuf;
-	}
-    } while (r>0);
-    return eof ? -1 : 0;
-}
-
-int InStream::get_c()
-{
-    bool eof;
-    int ret;
-    if (ibegin==iend) eof=try_read();
-    if (ibegin!=iend) {
-	ret=*ibegin++;
-	if (inl==ibuf+ibufl) inl=ibuf;
-	return ret;
-    }
-    if (eof) return EOF;
-    else return 0;
-}
-
-#define ENDL(x) ((x)=='\n')
-int InStream::get_s(char *buffer, int n)
-{
-    // Read from the file if data is available
-    bool eof=(try_read()<0);
-    // Search for a newline character
-    if (iend<inl) {
-	while (inl<ibuf+ibufl && !ENDL(*inl)) inl++;
-	if (inl==ibuf+ibufl) inl=ibuf;
-    }
-    while (inl<iend && !ENDL(*inl)) inl++;
-    // If a newline was found then copy the line to the buffer
-    if (inl!=iend) {
-	char *d=buffer, *s;
-	s=ibegin;
-	if (inl<ibegin) {
-	    while (s<ibuf+ibufl && n) if (*s!='\r') *d++=*s++, n--; else s++;
-	    s=ibuf;
-	}
-	while (s<inl && n) if (*s!='\r') *d++=*s++, n--; else s++;
-	*d=0;
-	ibegin=++inl;
-	return d-buffer;
-    } else {
-	if (eof) return -1;
-	else return 0;
-    }
-}
-*/

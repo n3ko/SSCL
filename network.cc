@@ -43,35 +43,35 @@ NetConn::NetConn(int family, const char *addr, const int port, const int len=SSC
 	struct sockaddr_in sa;
 	struct hostent *hp;
 	if ((fd=socket(AF_INET, SOCK_STREAM, 0))<0) {
-	    throw new Error("E-SYS", errno, sys_errlist[errno], "socket");
+	    throw Error("E-SYS", errno, sys_errlist[errno], "socket");
 	}
 	sa.sin_family=AF_INET;
 	if (!(hp=gethostbyname(addr))) {
 	    close(fd);
-	    throw new Error("E-SYS", errno, sys_errlist[errno], "gethostbyname");
+	    throw Error("E-SYS", errno, sys_errlist[errno], "gethostbyname");
 	}
 	bcopy(hp->h_addr, &sa.sin_addr, hp->h_length);
 	sa.sin_port=htons(port);
 	if (connect(fd, (struct sockaddr *)&sa, sizeof(sa))<0) {
 	    close(fd);
-	    throw new Error("E-SYS", errno, sys_errlist[errno], "connect");
+	    throw Error("E-SYS", errno, sys_errlist[errno], "connect");
 	}
     } else if (family==AF_UNIX) { // Unix socket
 	struct sockaddr_un sa;
 	if ((fd=socket(AF_UNIX, SOCK_STREAM, 0))<0) {
-	    throw new Error("E-SYS", errno, sys_errlist[errno], "socket");
+	    throw Error("E-SYS", errno, sys_errlist[errno], "socket");
 	}
 	sa.sun_family=AF_UNIX;
 	if (addr) {
 	    if (strlen(addr)>=UNIX_PATH_MAX)
-		throw new Error("F-NET", 2, "NetServer::NetServer", "address too long");
+		throw Error("F-NET", 2, "NetServer::NetServer", "address too long");
 	    else strcpy(sa.sun_path, addr);
-	} else throw new Error("F-NET", 3, "NetServer::NetServer", "address missing");
+	} else throw Error("F-NET", 3, "NetServer::NetServer", "address missing");
 	if (connect(fd, (struct sockaddr *)&sa, sizeof(sa))<0) {
 	    close(fd);
-	    throw new Error("E-SYS", errno, sys_errlist[errno], "connect");
+	    throw Error("E-SYS", errno, sys_errlist[errno], "connect");
 	}
-    } else throw new Error("F-NET", 1, "NetServer::NetServer", "unknown type");
+    } else throw Error("F-NET", 1, "NetServer::NetServer", "unknown type");
     server=NULL;
     fcntl(fd, F_SETFL, O_NONBLOCK);
 }
@@ -90,7 +90,7 @@ NetServer::NetServer(int family, char *addr, int port, int max_conn, int flags)
 	struct sockaddr_in sa;
 	sock=socket(PF_INET, SOCK_STREAM, 0);
 	if (sock<0) {
-	    throw new Error("F-SYS", errno, "socket", sys_errlist[errno]);
+	    throw Error("F-SYS", errno, "socket", sys_errlist[errno]);
 	    return;
 	}
 	sa.sin_family=PF_INET;
@@ -100,28 +100,28 @@ NetServer::NetServer(int family, char *addr, int port, int max_conn, int flags)
 	sa.sin_port=htons(port);
 	if (bind(sock, (struct sockaddr *)&sa, sizeof(sa))<0) {
 	    close(sock);
-	    throw new Error("F-SYS", errno, "bind", sys_errlist[errno]);
+	    throw Error("F-SYS", errno, "bind", sys_errlist[errno]);
 	    return;
 	}
     } else if (family==AF_UNIX) { // Unix socket
 	struct sockaddr_un sa;
 	sock=socket(PF_UNIX, SOCK_STREAM, 0);
 	if (sock<0) {
-	    throw new Error("F-SYS", errno, "socket", sys_errlist[errno]);
+	    throw Error("F-SYS", errno, "socket", sys_errlist[errno]);
 	    return;
 	}
 	sa.sun_family=PF_UNIX;
 	if (addr) {
 	    if (strlen(addr)>=UNIX_PATH_MAX)
-		throw new Error("F-NET", 2, "NetServer::NetServer", "address too long");
+		throw Error("F-NET", 2, "NetServer::NetServer", "address too long");
 	    else strcpy(sa.sun_path, addr);
-	} else throw new Error("F-NET", 3, "NetServer::NetServer", "address missing");
+	} else throw Error("F-NET", 3, "NetServer::NetServer", "address missing");
 	if (bind(sock, (struct sockaddr *)&sa, sizeof(sa))<0) {
 	    close(sock);
-	    throw new Error("F-SYS", errno, "bind", sys_errlist[errno]);
+	    throw Error("F-SYS", errno, "bind", sys_errlist[errno]);
 	    return;
 	}
-    } else throw new Error("F-NET", 1, "NetServer::NetServer", "unknown type");
+    } else throw Error("F-NET", 1, "NetServer::NetServer", "unknown type");
     if (addr) address=strdup(addr);
     listen(sock, max_conn);
     fcntl(sock, F_SETFL, O_NONBLOCK | flags);

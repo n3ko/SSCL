@@ -67,7 +67,7 @@ char *str_printv(char *dst, const char *s, int n, va_list args) {
 			d=str_itoa(d, n, va_arg(args, int), 0); n-=(d-d1);
 			break;
 		default:
-			throw new Error("E-STR", "TYPCHR", "Invalid type char '%c'", *s);
+			throw Error("E-STR", "TYPCHR", "Invalid type char '%c'", *s);
 	    }
 	    s++;
 	} else *d++=*s++, n--;

@@ -20,6 +20,7 @@
 #define _SSCL_LEXICAL_H
 
 #include <sscl/config.h>
+#include <sscl/stream.h>
 #include <stdio.h>
 
 typedef enum {t_bos, t_eos, t_word, t_string, t_int, t_oper,
@@ -61,6 +62,18 @@ class StrLexicalAnalyzer: public LexicalAnalyzer {
 	virtual int get_c();
 	virtual int get_c_wait() {return get_c();};
 	const char *ptr;
+};
+
+class StreamLexicalAnalyzer: public LexicalAnalyzer {
+    public:
+	StreamLexicalAnalyzer(InStream &s) {
+	    is=&s; c=get_c();
+	};
+	char *get_string();
+    protected:
+	virtual int get_c();
+	virtual int get_c_wait() {return is->get_c_wait();};
+	InStream *is;
 };
 
 class FileLexicalAnalyzer: public LexicalAnalyzer {
