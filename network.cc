@@ -75,6 +75,19 @@ NetConn::NetConn(int family, const char *addr, const int port, const int len):
     fcntl(fd, F_SETFL, O_NONBLOCK);
 }
 
+char *NetConn::get_ip()
+{
+    struct sockaddr sa;
+    socklen_t sal=sizeof(sa);
+    if (getsockname(fd, &sa, &sal)) {
+	return NULL;
+    } else {
+	if (sa.sa_family==PF_INET)
+	    return inet_ntoa(((struct sockaddr_in*)&sa)->sin_addr);
+	else return NULL;
+    }
+}
+
 NetConn::~NetConn()
 {
     char buf[32];

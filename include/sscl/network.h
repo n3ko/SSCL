@@ -45,6 +45,7 @@ class NetConn: public Stream {
     public:
 	NetConn(NetServer *serv, const int s, const int len=SSCL_BUF_LEN);
 	NetConn(int family, const char *addr, const int port, const int len=SSCL_BUF_LEN);
+	char *get_ip();
 	~NetConn();
 //	void send(string text);
 //	char *recv();
