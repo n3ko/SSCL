@@ -79,7 +79,7 @@ char *NetConn::get_ip()
 {
     struct sockaddr sa;
     socklen_t sal=sizeof(sa);
-    if (getsockname(fd, &sa, &sal)) {
+    if (getpeername(fd, &sa, &sal)) {
 	return NULL;
     } else {
 	if (sa.sa_family==PF_INET)
