@@ -19,7 +19,7 @@
  * Copyright (C) 1998,2001  Michael H. Buselli
  * zAVLTree.c: Source code for zAVLTrees.
  * This is version 0.1.3 (alpha).
- * Generated from $Id: avltree.h,v 1.1 2002/02/15 14:04:13 szilu Exp $
+ * Generated from $Id: avltree.h,v 1.2 2004/04/11 09:45:17 szilu Exp $
  *
  * The author of AVLTree can be reached at the following address:
  * Michael H. Buselli
@@ -75,7 +75,7 @@ class AVLTree: public Container {
 	};
 	AVLTree(char *nam="", bool master=true);
 	~AVLTree();
-	int insert(Object *item, AVLKey key=NULL);
+	int insert(Object *item, AVLKey key=(AVLKey)NULL);
 	Object *get(AVLKey key);
 	int remove(AVLKey key);
 	AVLTree::Iterator first();
