@@ -36,6 +36,11 @@ NullStream::NullStream(const char *file, const int flags)
     fd=open(file, flags);
 }
 
+NullStream::~NullStream()
+{
+    close(fd);
+}
+
 int NullStream::get_fd()
 {
     return fd;

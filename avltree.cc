@@ -19,7 +19,7 @@
  * Copyright (C) 1998,2001  Michael H. Buselli
  * zAVLTree.c: Source code for zAVLTrees.
  * This is version 0.1.3 (alpha).
- * Generated from $Id: avltree.cc,v 1.1 2002/02/15 14:04:11 szilu Exp $
+ * Generated from $Id: avltree.cc,v 1.2 2004/03/05 19:33:17 szilu Exp $
  *
  * The author of AVLTree can be reached at the following address:
  * Michael H. Buselli
@@ -146,6 +146,11 @@ AVLTree::Iterator::Iterator()
 AVLTree::Iterator::Iterator(AVLNode *node)
 {
     curnode=node;
+}
+
+Object *AVLTree::Iterator::get()
+{
+    return curnode ? curnode->item : NULL;
 }
 
 /*

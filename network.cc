@@ -77,8 +77,11 @@ NetConn::NetConn(int family, const char *addr, const int port, const int len=SSC
 
 NetConn::~NetConn()
 {
+    char buf[32];
     shutdown(fd, 2);
+    while (read(fd, buf, 30)>0);
     usleep(100);
+    close(fd);
     if (server) server->remove(fd);
 }
 
@@ -150,7 +153,7 @@ char *itoa(int i)
 
 NetConn *NetServer::accept(int flags)
 {
-    struct sockaddr sa; unsigned sa_len;
+    struct sockaddr sa; unsigned sa_len=16;
     int s=::accept(sock, &sa, &sa_len);
     if (s>0) {
 	fcntl(s, F_SETFL, O_NONBLOCK | flags);

@@ -2,13 +2,14 @@ include Makefile.global
 
 TARGET = libsscl.so.$(VERSION)
 OBJECTS = o/strfunc.o o/error.o o/object.o o/list.o o/avltree.o \
-	  o/stream.o o/network.o o/lexical.o
+	  o/stream.o o/network.o o/lexical.o \
+	  o/sdt.o
 
 #---------------------------------------- Main rules
 all: o $(TARGET) $(SO_NAME) libsscl.so libsscl.a sscl.spec
 
 clean:
-	rm -rf o; rm -f core .depend $(TARGET) $(SO_NAME) libsscl.so
+	rm -rf o; rm -f core .depend $(TARGET) $(SO_NAME) libsscl.so libsscl.a
 
 depend:
 	gcc -M -MM $(CCINCLUDE) *.cc |sed 's/^/o\//' >.depend
@@ -24,8 +25,11 @@ install_root:
 install: all
 	@if [ $$UID != '0' ]; then echo "Root password is required.."; su -c '${MAKE}  install_root'; else ${MAKE} install_root; fi
 
-rpm: install sscl.spec
+rpm_root: install sscl.spec
 	rpm -bb sscl.spec
+
+rpm: sscl.spec
+	@if [ $$UID != '0' ]; then echo "Root password is required.."; su -c '${MAKE}  rpm_root'; else ${MAKE} rpm_root; fi
 
 ifneq (,$(wildcard .depend))
     include .depend

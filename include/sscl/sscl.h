@@ -30,9 +30,14 @@
 #include <sscl/avltree.h>
 
 #include <sscl/stream.h>
+
 // Lexical analyzer
 #include <sscl/lexical.h>
+
 // Network classes
 #include <sscl/network.h>
+
+// Symbion Daemon Tools communication classes
+#include <sscl/sdt.h>
 
 #endif /* _SSCL_H */

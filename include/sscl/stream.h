@@ -31,6 +31,7 @@ class NullStream {
     public:
 	NullStream(const int f);
 	NullStream(const char *file, const int flags);
+	~NullStream();
 	//NullStream(char *file);
 	int get_fd();
     protected:
