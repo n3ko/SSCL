@@ -1,0 +1,43 @@
+%define ver      _VER_
+%define rel      1Sym
+%define prefix   _PREFIX_
+Name: sscl
+Summary: Symbion Sample Class Library
+Version: %ver
+Release: %rel
+Copyright: GPL
+Group: Development/Libraries
+Source: sscl-%ver.tar.gz
+Vendor: Symbion Bt.
+
+%package devel
+Summary: Symbion Sample Class Library
+Group: System Environment/Libraries
+
+%description
+Symbion Simple Class Library is a small, fast, robust and secure
+class library for the C++ language. It is primarily used in
+networking applications, where security and robustness is required.
+
+%description devel
+Symbion Simple Class Library is a small, fast, robust and secure
+class library for the C++ language. It is primarily used in
+networking applications, where security and robustness is required.
+
+Install sscl-devel if you want to develop programs which will use
+SSCL.
+
+%post
+ldconfig
+
+%postun
+ldconfig
+
+%files
+%defattr(-, root, root)
+%{prefix}/lib/libsscl.so.%version
+
+%files devel
+%defattr(-, root, root)
+%{prefix}/lib/libsscl.so
+%{prefix}/include/sscl

@@ -1,0 +1,22 @@
+PREFIX = /usr
+
+MAJOR_VERSION = 0
+MINOR_VERSION = 9
+MICRO_VERSION = 1
+
+VERSION = ${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}
+SO_NAME = libsscl.so.${MAJOR_VERSION}.${MINOR_VERSION}
+
+CC = gcc
+LD = gcc
+INSTALL = /usr/bin/install -c
+LN_S = ln -s
+LIBDIR = $(PREFIX)/lib
+INCLUDEDIR = $(PREFIX)/include/sscl
+
+CCINCLUDE = -I./include
+CCFLAGS = -Wall -g3 -fPIC
+LDFLAGS = -shared -soname $(SO_NAME)
+CCOPTS = $(CCFLAGS) $(CCINCLUDE)
+LDLIBS = -L/usr/lib -lc -ldl
+LDOPTS = $(LDFLAGS) $(LDLIBS)
