@@ -6,7 +6,7 @@ OBJECTS = o/strfunc.o o/error.o o/object.o o/list.o o/avltree.o \
 	  o/sdt.o
 
 #---------------------------------------- Main rules
-all: o $(TARGET) $(SO_NAME) libsscl.so libsscl.a sscl.spec
+all: o $(TARGET) $(SO_NAME) libsscl.so libsscl.a sscl.ver sscl.spec
 
 clean:
 	rm -rf o; rm -f core .depend $(TARGET) $(SO_NAME) libsscl.so libsscl.a
@@ -54,6 +54,9 @@ $(SO_NAME):
 
 libsscl.so:
 	$(LN_S) -f $(TARGET) libsscl.so
+
+sscl.ver:
+	echo "$(VERSION)" >$@
 
 sscl.spec: sscl.spec.in
 	sed -e "s/_VER_/$(VERSION)/" -e "s!_PREFIX_!$(PREFIX)!" <sscl.spec.in >sscl.spec
