@@ -199,6 +199,7 @@ int stream_get_s_wait(Stream *s, char *buffer, int n);
 int stream_put_c(Stream *s, const char c);
 int stream_write(Stream *s, const char *buffer, int n);
 int stream_put_s(Stream *s, const char *buffer);
+int stream_print_v(Stream *s, const char *format, va_list args);
 int stream_print(Stream *s, const char *format,...);
 
 //*********************
