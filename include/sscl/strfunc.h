@@ -59,6 +59,7 @@ extern char *_str_cut_internal_ptr;
 
 static inline char *sscl_str_cpy(char *d, const char *s, int n)
 {
+    if (!d || !s) return d;
     while (*s && n>0) *d++=*s++, n--;
     *d=0;
     return d;
@@ -66,6 +67,7 @@ static inline char *sscl_str_cpy(char *d, const char *s, int n)
 
 static inline char *sscl_str_ecpy(char *d, const char *s, int n)
 {
+    if (!d || !s) return d;
     while (*s && n>0) {
 	if (*s=='\'' || *s=='\\') {
 	    *d++='\\'; n--;
@@ -79,6 +81,7 @@ static inline char *sscl_str_ecpy(char *d, const char *s, int n)
 static inline char *sscl_str_tcpy(char *d, const char *s, int n)
 {
     register char c;
+    if (!d || !s) return d;
     while ((c=*s++) && n>0) {
 	if (c=='\\') {
 	    switch (c=*s++) {
@@ -95,6 +98,7 @@ static inline char *sscl_str_tcpy(char *d, const char *s, int n)
 
 static inline char *sscl_str_cat(char *d, const char *s, int n)
 {
+    if (!d || !s) return d;
     while (*d) d++;
     return sscl_str_cpy(d, s, n);
 }
@@ -158,8 +162,7 @@ static inline void str_chomp(char *s, const char *chset)
 {
     register const char *chs=chset?chset:"\r\n";
     register char *p=s+str_len(s)-1;
-    while (p>=s && str_chr(chs, *p)) p--;
-    *p=0;
+    while (p>=s && str_chr(chs, *p)) *p--=0;
 }
 
 static inline int str_scale_cmp(const char *scale, const char *s1, const char *s2)
