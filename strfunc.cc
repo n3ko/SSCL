@@ -28,6 +28,7 @@ char *_str_cut_internal_ptr;
 char *_str_num_digits="0123456789ABCDEF";
 
 char *str_itoa(char *d, int n, int i, const char fill, int base) {
+    char num[32], *p=num;
 //    char *f=;
     if (n>0) {
 	if (i<0) {
@@ -39,9 +40,10 @@ char *str_itoa(char *d, int n, int i, const char fill, int base) {
 	}
 	while (i && n>0) {
 	    register int is=i % base;
-	    *d++=is<10 ? '0'+is : (is<36 ? 'A'+is-10 : '*'); n--;
+	    *p++=is<10 ? '0'+is : (is<36 ? 'A'+is-10 : '*'); n--;
 	    i/=base;
 	}
+	while (p>num) {*d++=*--p;};
     }
     *d=0; return d;
 }

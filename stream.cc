@@ -158,7 +158,7 @@ int OutStream::put_c(const char c)
 int OutStream::write(const char *buffer, int n)
 {
     int s=n, w;
-    while (s>=0) {
+    while (s>0) {
 	s-=w=::write(fd, buffer+n-s, s);
 	if (!w) usleep(100);
     }
