@@ -47,6 +47,7 @@ void list_done_with_data(List *list)
 {
     ListItem *p, *prev;
     for (p=list->first; p; (prev=p, p=p->next, free(prev->data), free(prev)));
+    list_init(list);
 }
 
 void list_free(List *list)
@@ -149,12 +150,14 @@ void slist_done(SList *list)
 {
     SListItem *p, *prev;
     for (p=list->first; p; (prev=p, p=p->next, free(prev)));
+    slist_init(list);
 }
 
 void slist_done_with_data(SList *list)
 {
     SListItem *p, *prev;
     for (p=list->first; p; (prev=p, p=p->next, free(prev->data), free(prev)));
+    slist_init(list);
 }
 
 void slist_free(SList *list)
