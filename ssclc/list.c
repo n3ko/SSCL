@@ -40,6 +40,7 @@ void list_done(List *list)
 {
     ListItem *p, *prev;
     for (p=list->first; p; (prev=p, p=p->next, free(prev)));
+    list_init(list);
 }
 
 void list_done_with_data(List *list)
