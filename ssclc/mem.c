@@ -20,6 +20,8 @@
 #include <unistd.h>
 #include <sys/mman.h>
 
+//#define DEBUG
+
 //*************
 // MemChunk
 //*************
@@ -63,7 +65,7 @@ static void mem_chunk_extend(MemChunk *mc)
     }
     new->nfree=mc->atom_per_page;
     new->next=mc->first;
-    mc->first=new->next;
+    mc->first=new;
     *ATOM_ADDR(mc, new, 0)=mc->freelist;
     for (i=1; i<mc->atom_per_page; i++) *ATOM_ADDR(mc, new, i)=ATOM_ADDR(mc, new, i-1);
     mc->freelist=ATOM_ADDR(mc, new, mc->atom_per_page-1);
@@ -96,6 +98,16 @@ int mem_chunk_count_free(MemChunk *mc)
     return n;
 }
 
+int mem_chunk_count_size(MemChunk *mc)
+{
+    int n=0;
+    MemChunkPage *p=mc->first;
+    while (p) {
+	p=p->next; n++;
+    }
+    return n*mc->atom_per_page;
+}
+
 //******************
 // Memory Allocator
 //******************
@@ -106,8 +118,9 @@ static int mem_chunk_n;
 static struct {
     unsigned int n_alloc;
     unsigned int n_free;
-    unsigned int n_maxalloced;
-} *mem_chunk_stat[];
+    unsigned int n_alloced;
+    unsigned int n_max_alloced;
+} *mem_chunk_stat;
 #endif
 
 void mem_alloc_init(unsigned int nchunk, unsigned int *sizes)
@@ -125,6 +138,8 @@ void mem_alloc_init(unsigned int nchunk, unsigned int *sizes)
 #ifdef DEBUG
 	mem_chunk_stat[i].n_alloc=0;
 	mem_chunk_stat[i].n_free=0;
+	mem_chunk_stat[i].n_alloced=0;
+	mem_chunk_stat[i].n_max_alloced=0;
 #endif
     }
 }
@@ -133,30 +148,46 @@ void mem_alloc_done(unsigned int nchunk)
 {
     int i;
     for (i=0; i<nchunk; i++) {
+#ifdef DEBUG
 	if (mem_chunk[i]) {
-	    fprintf(stderr, "Chunk %d (size %d):\n", i, i<<WORD_SIZE_LOG2);
+	    fprintf(stderr, "Chunk %d (size %d): free:%d/%d alloc:%d free:%d max_alloc:%d\n", i,
+		    i<<WORD_SIZE_LOG2, mem_chunk_count_free(mem_chunk[i]),
+		    mem_chunk_count_size(mem_chunk[i]),
+		    mem_chunk_stat[i].n_alloc,
+		    mem_chunk_stat[i].n_free,
+		    mem_chunk_stat[i].n_max_alloced);
 //	    mem_chunk_print(mem_chunk[i]);
 	}
+#endif
     }
 }
 
 void *mem_alloc_heap(unsigned int size)
 {
     register unsigned int wsize=(size+WORD_SIZE-1)>>WORD_SIZE_LOG2;
+    void *ret;
     if (!size) return NULL;
 #ifdef DEBUG
-    fprintf(stderr, "mem_alloc_heap(%d(%d))\n", size, wsize);
+    fprintf(stderr, "mem_alloc_heap(%d(%d))", size, wsize);
 #endif
     if (wsize>=mem_chunk_n || !mem_chunk[wsize]) {
 #ifdef DEBUG_MEM
 	fprintf(stderr, "    malloc(%d)\n", size);
 #endif
-	return malloc(size);
+	ret=malloc(size);
+    } else {
+	ret=mem_chunk_alloc(mem_chunk[wsize]);
+#ifdef DEBUG
+	mem_chunk_stat[wsize].n_alloc++;
+	mem_chunk_stat[wsize].n_alloced++;
+	if (mem_chunk_stat[wsize].n_alloced>mem_chunk_stat[wsize].n_max_alloced)
+	    mem_chunk_stat[wsize].n_max_alloced=mem_chunk_stat[wsize].n_alloced;
+#endif
     }
 #ifdef DEBUG
-    mem_chunk_stat[wsize].n_alloc++;
+    fprintf(stderr, "=%p\n", ret);
 #endif
-    return mem_chunk_alloc(mem_chunk[wsize]);
+    return ret;
 }
 
 void mem_free_heap(void *ptr, unsigned int size)
@@ -169,6 +200,7 @@ void mem_free_heap(void *ptr, unsigned int size)
     if (wsize>=mem_chunk_n || !mem_chunk[wsize]) return free(ptr);
 #ifdef DEBUG
     mem_chunk_stat[wsize].n_free++;
+    mem_chunk_stat[wsize].n_alloced--;
 #endif
     return mem_chunk_free(mem_chunk[wsize], ptr);
 }
