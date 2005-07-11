@@ -173,7 +173,8 @@ int stream_put_s(Stream *s, const char *buffer)
 int stream_print_v(Stream *s, const char *format, va_list args)
 {
     char buf[8001];
-    return stream_put_s(s, str_printv(buf, format, 8000, args));
+    str_printv(buf, format, 8000, args);
+    return stream_put_s(s, buf);
 }
 
 int stream_print(Stream *s, const char *format,...)
