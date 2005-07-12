@@ -19,9 +19,9 @@
 
 #define HASH_LIMIT 0.5
 
-int cstring_hash(const char *str)
+unsigned int cstring_hash(const char *str)
 {
-    register int h;
+    register unsigned int h;
     for (h=0; *str; h=h*37+*str++);
     return h;
 }
@@ -41,6 +41,7 @@ Hash *hash_init(Hash *hash, int size, HashFunc hash_func)
     hash->mask=mask;
     hash->hash_func=hash_func ? hash_func : &cstring_hash;
     for (i=0; i<real_size; i++) hash->node[i]=NULL;
+//    fprintf(stderr, "hash=%p, hash->node=%p\n", hash, hash->node);
     return hash;
 }
 
@@ -65,21 +66,22 @@ static void rebuild_hash_table(Hash *hash)
     }
 }
 
-const void *hash_get(const Hash *hash, const char *key)
+void *hash_get(const Hash *hash, const char *key)
 {
-    int i, h=hash->hash_func(key) % hash->size;
+    unsigned int i, h=hash->hash_func(key) % hash->size;
     HashNode *node=hash->node[h];
     if (!node) return NULL;
-    for (i=0; str_cmp(node->entry[i].key, key) && i<node->count; i++);
+    for (i=0; i<node->count && str_cmp(node->entry[i].key, key); i++);
     if (i<node->count) return node->entry[i].data;
     else return NULL;
 }
 
-void hash_set(Hash *hash, const char *key, const void *data)
+void hash_set(Hash *hash, const char *key, void *data)
 {
-    int i, h=hash->hash_func(key) % hash->size;
+    unsigned int i, h=hash->hash_func(key) % hash->size;
     HashNode *node=hash->node[h];
-    fprintf(stderr, "hash('%s')=%d (%d)\n", key, h, hash->size);
+//    fprintf(stderr, "h=%d, hash=%p, hash->node=%p\n", h,hash, hash->node);
+//    fprintf(stderr, "hash('%s')=%d (%d)\n", key, h, hash->size);
     if (!node) {
 	node=mem_alloc_heap(sizeof(HashNode)+sizeof(node->entry[0]));
 	node->count=1;
@@ -104,7 +106,7 @@ void hash_set(Hash *hash, const char *key, const void *data)
 const void *hash_delete(const Hash *hash, const char *key)
 {
     const void *ret;
-    int i, h=hash->hash_func(key) % hash->size;
+    unsigned int i, h=hash->hash_func(key) % hash->size;
     HashNode *node=hash->node[h];
     if (!node) return NULL;
     for (i=0; str_cmp(node->entry[i].key, key) && i<node->count; i++);
@@ -120,4 +122,14 @@ const void *hash_delete(const Hash *hash, const char *key)
 	return ret;
     }
     else return NULL;
+}
+
+void hash_foreach(Hash *hash, void (*func)(const char *, void *, void *), void *data)
+{
+    int i, j;
+    for (i=0; i<hash->size; i++) {
+	HashNode *node=hash->node[i];
+	if (node) for (j=0; j<node->count; j++)
+	    func(node->entry[j].key, node->entry[j].data, data);
+    }
 }

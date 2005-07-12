@@ -53,6 +53,7 @@ struct _MemChunkPage {
 
 MemChunk *mem_chunk_init(MemChunk *mc, int atom_size, int atom_per_page, MemChunkAllocator mca);
 MemChunk *mem_chunk_new(int atom_size, int atom_per_page, MemChunkAllocator mca);
+void mem_chunk_done(MemChunk *mc);
 char *mem_chunk_alloc(MemChunk *mc);
 void mem_chunk_free(MemChunk *mc, void *ptr);
 
@@ -60,10 +61,12 @@ void mem_chunk_free(MemChunk *mc, void *ptr);
 // Memory Allocator
 //******************
 void mem_alloc_init(unsigned int nchunk, unsigned int *sizes);
-void mem_alloc_done(unsigned int nchunk);
+void mem_alloc_done();
 void *mem_alloc_heap(unsigned int size);
 void mem_free_heap(void *ptr, unsigned int size);
 void *mem_realloc_heap(void *ptr, unsigned int oldsize, unsigned int newsize);
+void mem_alloc_stat_reset();
+void mem_alloc_stat_show();
 
 #define NEW(type) ((type *)malloc(sizeof(type)))
 #define NEW_H(type) (type*)mem_alloc_heap(sizeof(type))
@@ -124,6 +127,8 @@ SList *slist_init(SList *list);
 SList *slist_new();
 void slist_free(SList *list);
 void slist_free_with_data(SList *list);
+void slist_done(SList *list);
+void slist_done_with_data(SList *list);
 void slist_append(SList *list, void *data);
 void list_push(List *list, void *data);
 void *list_pop(List *list);
@@ -137,7 +142,7 @@ int slist_get_num(SList *list);
 typedef struct _Hash Hash;
 typedef struct _HashNode HashNode;
  
-typedef int (*HashFunc)(const char *str);
+typedef unsigned int (*HashFunc)(const char *str);
 #define HASH_FUNC(x) ((HashFunc)x)
 
 struct _Hash {
@@ -152,16 +157,17 @@ struct _HashNode {
     int count;
     struct {
 	const char *key;
-	const void *data;
+	void *data;
     } entry[0];
 };
 
-int cstring_hash(const char *str);
+unsigned int cstring_hash(const char *str);
 Hash *hash_init(Hash *hash, int size, HashFunc hash_func);
 void hash_done(Hash *hash);
-const void *hash_get(const Hash *hash, const char *key);
-void hash_set(Hash *hash, const char *key, const void *data);
+void *hash_get(const Hash *hash, const char *key);
+void hash_set(Hash *hash, const char *key, void *data);
 const void *hash_delete(const Hash *hash, const char *key);
+void hash_foreach(Hash *hash, void (*func)(const char *, void *, void *), void *data);
 
 //*********************
 // AVLTree
