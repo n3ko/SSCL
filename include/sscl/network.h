@@ -48,6 +48,17 @@ class NetConn {
 	virtual int put_c(const char c) {return stream_put_c(&cs._parent, c);}
 	virtual int write(const char *buffer, int n) {return stream_write(&cs._parent, buffer, n);}
 	virtual int put_s(const char *buffer) {return stream_put_s(&cs._parent, buffer);}
+	virtual int print_v(const char *format, va_list args) {
+	    return stream_print_v(&cs._parent, format, args);
+	}
+	virtual int print(const char *format,...) {
+	    int ret;
+	    va_list args;
+	    va_start(args, format);
+	    ret=stream_print_v(&cs._parent, format, args);
+	    va_end(args);
+	    return ret;
+	}
     private:
 	friend class NetServer;
 	::NetConn cs;

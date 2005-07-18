@@ -65,6 +65,17 @@ class OutStream: virtual public NullStream {
 	virtual int put_c(const char c) {return stream_put_c(&cs, c);}
 	virtual int write(const char *buffer, int n) {return stream_write(&cs, buffer, n);}
 	virtual int put_s(const char *buffer) {return stream_put_s(&cs, buffer);}
+	virtual int print_v(const char *format, va_list args) {
+	    return stream_print_v(&cs, format, args);
+	}
+	virtual int print(const char *format,...) {
+	    int ret;
+	    va_list args;
+	    va_start(args, format);
+	    ret=stream_print_v(&cs, format, args);
+	    va_end(args);
+	    return ret;
+	}
 };
 
 class Stream: public InStream, public OutStream {

@@ -32,6 +32,9 @@ class Hash: public Container {
 	const void *get(const char *key) {return hash_get(&cs, key);}
 	const void *del(const char *key) {return hash_delete(&cs, key);}
 	const void *operator[](const char *key) {return hash_get(&cs, key);}
+	void foreach(void (*func)(const char *, void *, void *), void *data) {
+	    return hash_foreach(&cs, func, data);
+	}
     private:
 	::Hash cs;
 };
