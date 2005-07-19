@@ -28,7 +28,7 @@ Object::Object(char *nam)
 
 Object::~Object()
 {
-    delete name;
+    free(name);
 }
 
 char *Object::get_name()

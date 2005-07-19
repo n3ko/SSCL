@@ -30,7 +30,7 @@ class NetServer;
 
 class NetConn {
     public:
-	NetConn() {netconn_init_server(&cs, NULL, 0, 0);}
+	NetConn() {netconn_init_server(&cs, NULL, -1, 0);}
 	NetConn(const NetConnFamily family, const char *addr, const int port, const int buflen=SSCL_BUF_LEN)
 	{
 	    errno=0;
@@ -40,7 +40,7 @@ class NetConn {
 	    }
 	}
 	char *get_ip() {return netconn_get_ip(&cs);}
-	virtual ~NetConn() {netconn_done(&cs);}
+	virtual ~NetConn() {/*if (cs._parent.fd>0)*/ netconn_done(&cs);}
 	virtual int get_c() {return stream_get_c(&cs._parent);}
 	virtual int get_c_wait() {return stream_get_c_wait(&cs._parent);}
 	int get_s(char *buffer, int n) {return stream_get_s(&cs._parent, buffer, n);}
@@ -76,8 +76,12 @@ class NetServer/*: public AVLTree*/ {
 	    }
 	}
 	~NetServer() {netserver_done(&cs);}
-	NetConn *accept(int flags=0, int buflen=SSCL_BUF_LEN)
-		{NetConn *nc=new NetConn; return netserver_accept(&cs, &nc->cs, flags, buflen) ? nc : NULL;}
+	NetConn *accept(int flags=0, int buflen=SSCL_BUF_LEN) {
+	    NetConn *nc=new NetConn;
+	    ::NetConn *r=netserver_accept(&cs, &nc->cs, flags, buflen);
+	    if (r) return nc;
+	    delete nc; return NULL;
+	}
 	//void NetServer::add(int s, NetConn *cl);
 	void remove(int s) {netserver_remove(&cs, s);}
     private:

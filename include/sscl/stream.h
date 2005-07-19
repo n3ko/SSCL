@@ -49,7 +49,8 @@ class InStream: virtual public NullStream {
 //		{stream_init_fd(&cs, fd, len);}
 //	InStream(const char *file, const int flags, const int len=SSCL_BUF_LEN): NullStream(file, flags)
 //		{stream_init_file(&cs, file, flags, len);}
-	virtual ~InStream() {stream_done(&cs);}
+//	virtual ~InStream() {stream_done(&cs);}
+	virtual ~InStream() {}
 	virtual int get_c() {return stream_get_c(&cs);}
 	virtual int get_c_wait() {return stream_get_c_wait(&cs);}
 	int get_s(char *buffer, int n) {return stream_get_s(&cs, buffer, n);}

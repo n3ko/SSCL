@@ -54,7 +54,7 @@ Stream *stream_new_file(const char *fn, int flags, const int ilen)
 
 void stream_done(Stream *s)
 {
-    close(s->fd);
+    if (s->fd>=0) close(s->fd);
     free(s->ibuf);
 }
 
@@ -124,7 +124,9 @@ int stream_get_s(Stream *s, char *buffer, int n)
     if (iend>s->ibuf+s->ibufl) iend-=s->ibufl;
     while (s->inl<iend && !ENDL(*s->inl)) s->inl++;
     // If a newline was found then copy the line to the buffer
-    if (ENDL(*s->inl)) {
+//    if (ENDL(*s->inl)) {
+    if ((s->ibegin>iend && (s->inl<iend || s->inl>s->ibegin))
+	    || (s->ibegin<=iend && s->ibegin<=s->inl && s->inl<iend)) {
 	char *d=buffer, *st=s->ibegin;
 	if (s->inl<st) {
 	    while (st<s->ibuf+s->ibufl && n) if (*st!='\r') *d++=*st++, n--; else st++;

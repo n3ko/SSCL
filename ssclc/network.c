@@ -79,11 +79,13 @@ NetConn *netconn_new(const NetConnFamily family, const char *addr, const int por
 void netconn_done(NetConn *net)
 {
     char buf[32];
-    shutdown(net->_parent.fd, 2);
-    while (read(net->_parent.fd, buf, 30)>0);
-    usleep(100);
-    stream_done(STREAM(net));
-    if (net->server) netserver_remove(net->server, net->_parent.fd);
+    if (net->_parent.fd>=0) {
+	shutdown(net->_parent.fd, 2);
+	while (read(net->_parent.fd, buf, 30)>0);
+	usleep(100);
+	stream_done(STREAM(net));
+	if (net->server) netserver_remove(net->server, net->_parent.fd);
+    }
 }
 
 void netconn_free(NetConn *net)
