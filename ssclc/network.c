@@ -50,12 +50,21 @@ NetConn *netconn_init(NetConn *net, const NetConnFamily family, const char *addr
 	if ((fd=socket(PF_UNIX, SOCK_STREAM, 0))<0) return NULL;
 	sa.sun_family=AF_UNIX;
 	if (addr) {
-	    if (str_len(addr)>=sizeof(sa.sun_path)-1) return NULL;
-	    else str_cpy(sa.sun_path, addr, sizeof(sa.sun_path)-1);
+	    char *p, *daddr=str_dup(addr);
+	    int cstat=-1;
+	    p=str_split(daddr, ":");
+	    while (p && cstat) {
+		if (str_len(p)>=sizeof(sa.sun_path)-1) return NULL;
+		else str_cpy(sa.sun_path, p, sizeof(sa.sun_path)-1);
+		cstat=connect(fd, (struct sockaddr *)&sa, sizeof(sa));
+		p=str_split(NULL, ":");
+	    }
+	    free(daddr);
+	    if (cstat<0) {
+		close(fd);
+		return NULL;
+	    }
 	} else return NULL;
-	if (connect(fd, (struct sockaddr *)&sa, sizeof(sa))<0) {
-	    close(fd); return NULL;
-	}
     } else return NULL;
     stream_init_fd(STREAM(net), fd, buflen);
     fcntl(net->_parent.fd, F_SETFL, O_NONBLOCK);
