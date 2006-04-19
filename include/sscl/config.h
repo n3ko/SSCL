@@ -20,10 +20,13 @@
 #define _SSCL_CONFIG_H
 
 #define SSCL_BUF_LEN 1024
+#define SSCRIPT_MAX_ARGS 32
 
 // Machine word size in bytes and its logarithm
 #define WORD_SIZE 4
 #define WORD_SIZE_LOG2 2
+
+//#define DEBUG
 
 
 #endif /* _SSCL_CONFIG_H */

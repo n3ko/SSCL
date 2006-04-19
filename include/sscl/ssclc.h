@@ -144,6 +144,7 @@ typedef struct _HashNode HashNode;
  
 typedef unsigned int (*HashFunc)(const char *str);
 #define HASH_FUNC(x) ((HashFunc)x)
+typedef char *(*HashPrintFunc)(char *d, const void *data, int n);
 
 struct _Hash {
     int count;
@@ -156,7 +157,7 @@ struct _Hash {
 struct _HashNode {
     int count;
     struct {
-	const char *key;
+	char *key;
 	void *data;
     } entry[0];
 };
@@ -168,6 +169,8 @@ void *hash_get(const Hash *hash, const char *key);
 void hash_set(Hash *hash, const char *key, void *data);
 const void *hash_delete(const Hash *hash, const char *key);
 void hash_foreach(Hash *hash, void (*func)(const char *, void *, void *), void *data);
+void hash_foreach_free_func(const char *key, void *data, void *d);
+char *hash_print(char *d, const char *s, int n, Hash *hash, HashPrintFunc print);
 
 //*********************
 // AVLTree
@@ -315,6 +318,131 @@ char *lexical_analyzer_parse_get_sstring(LexicalAnalyzer *la, Token token, char 
 	const int n);
 int lexical_analyzer_get_c(LexicalAnalyzer *la);
 
+//*********
+// SScript
+//*********
+typedef struct _SScriptGrammar SScriptGrammar;
+typedef struct _SScriptCmd SScriptCmd;
+typedef struct _SScriptInterp SScriptInterp;
+typedef struct _SScriptBlock SScriptBlock;
+typedef struct _SScriptArg SScriptArg;
+typedef struct _SScriptArgList SScriptArgList;
+typedef SScriptCmd *(*SScriptCmdParser)(LexicalAnalyzer *la);
+#define SSCRIPT_CMD_FUNC(x) ((SScriptCmdFunc)x)
+typedef int (*SScriptCmdHandler)(SScriptInterp *interp, void *_this, void *data);
+typedef void (*SScriptCmdDestroyHandler)(SScriptCmd *cmd);
+
+struct _SScriptGrammar {
+    Hash cmds;			// Hash(SScriptCmdParser)
+};
+
+struct _SScriptCmd {
+    SScriptCmdHandler handler;
+    SScriptCmdDestroyHandler destroy;
+    void *data;
+};
+
+struct _SScriptBlock {
+    SList cmds;			// Hash(SScriptCmd)
+};
+
+struct _SScriptInterp {
+    Hash var;
+};
+
+struct _SScriptArg {
+    char *name;
+    Token type;
+    int intval;
+};
+
+SScriptGrammar *sscript_grammar_init(SScriptGrammar *gr, int size);
+void sscript_grammar_add_cmd(SScriptGrammar *gr, const char *name, SScriptCmdParser parser);
+void sscript_grammar_done(SScriptGrammar *gr);
+
+//SScriptCmd *sscript_cmd_init(SScriptCmd *cmd, SScriptGrammar *gr);
+SScriptCmd *sscript_cmd_init(SScriptCmd *cmd, SScriptCmdHandler handler, void *data);
+void sscript_cmd_done(SScriptCmd *cmd);
+
+SScriptBlock *sscript_block_init(SScriptBlock *blk, SScriptGrammar *gr, LexicalAnalyzer *la);
+void sscript_block_done(SScriptBlock *blk);
+
+SScriptInterp *sscript_interp_init(SScriptInterp *interp, int size);
+void sscript_interp_done(SScriptInterp *interp);
+int sscript_interp_run(SScriptInterp *interp, SScriptBlock *blk);
+
+SScriptArg *sscript_arglist_parse(LexicalAnalyzer *la);
+void sscript_arglist_free(SScriptArg *arglist);
+char *sscript_expr_parse(SScriptInterp *interp, LexicalAnalyzer *la);
+void sscript_arg_parse(SScriptInterp *interp, SScriptArg *arglist, LexicalAnalyzer *la);
+
+//*********
+// XML
+//*********
+typedef struct _XMLNode XMLNode;
+#define XML_NODE(x) ((XMLNode *)x)
+typedef struct _XMLPackage XMLPackage;
+#define XML_PACKAGE(x) ((XMLPackage *)x)
+typedef struct _XMLHandler XMLHandler;
+#define XML_HANDLER(x) ((XMLHandler *)x)
+
+typedef void (*XMLParseFunc)(XMLNode *node);
+#define XML_PARSE_FUNC(x) ((XMLParseFunc)x)
+typedef void *(*XMLNewFunc)(XMLNode *node, void *parent, Hash *vs);
+#define XML_NEW_FUNC(x) ((XMLNewFunc)x)
+
+struct _XMLNode {
+    char *ns;
+    char *cls;
+    Hash *args;
+    XMLNode *parent;
+    SList *child;
+    XMLPackage *pkg;
+};
+
+struct _XMLNS {
+    char *URI;
+    Hash *hash;
+};
+
+struct _XMLHandler {
+    XMLNewFunc new_func;
+    XMLParseFunc parse_func;
+};
+
+struct _XMLClassHandler {
+    char *ns;
+    char *cls;
+    Hash *args;
+    XMLNode *parent;
+    SList *child;
+};
+
+void xml_package_init(XMLPackage *pkg, int sc_size, int node_num);
+XMLPackage *xml_package_new(int sc_size, int node_num);
+void xml_package_done(XMLPackage *pkg);
+
+XMLNode *xml_node_new(XMLPackage *pkg, char *ns, char *cls, Hash *arg,
+	XMLNode *parent, SList *child);
+void xml_node_done(XMLNode *node);
+void xml_node_append(XMLNode *node, XMLNode *child);
+XMLNode *xml_parse_object(XMLPackage *pkg, LexicalAnalyzer *la);
+XMLNode *xml_parse(XMLPackage *pkg, LexicalAnalyzer *la);
+XMLNode *xml_parse_str(XMLPackage *pkg, char *str);
+XMLNode *xml_parse_file(XMLPackage *pkg, char *filename);
+
+void *xml_eval(XMLNode *node, void *parent, Hash *vs);
+char *xml_get_val(char *expr, Hash *vs);
+char *xml_get_param_val(Hash *params, char *name, Hash *vs);
+Hash *xml_parse_param(Hash *params, Hash *vs);
+
+void *xml_handle_object(XMLNode *node, void *parent, Hash *vs);
+void *xml_handle_template(XMLNode *node, void *parent, Hash *vs);
+void xml_parse_template(XMLNode *node);
+
+void xml_register_handler(char *cls, XMLNewFunc new_func, XMLParseFunc parse_func);
+//void xml_register_handler(char *cls, XMLNewFunc *new_func, XMLAddFunc *add_func);
+void xml_init();
 
 //************************************
 // Symbion Daemon Tools communication

@@ -23,7 +23,8 @@ char *_str_split_internal_ptr;
 char *_str_cut_internal_ptr;
 char *_str_num_digits="0123456789ABCDEF";
 
-char *str_itoa(char *d, int n, int i, const char fill, int base) {
+char *str_itoa(char *d, int n, int i, const char fill, int base)
+{
     char num[32], *p=num;
 //    char *f=;
     if (n>0) {
@@ -44,13 +45,14 @@ char *str_itoa(char *d, int n, int i, const char fill, int base) {
     *d=0; return d;
 }
 
-char *str_printv(char *dst, const char *s, int n, va_list args) {
+char *str_printv(char *dst, const char *s, int n, va_list args)
+{
     char *p, *d=dst, *d1;
     while (*s && n>0) {
 	if (*s=='%') {
 	    switch (*++s) {
-		case '%': *d++='%'; break;
-		case 'c': *d++=va_arg(args, int); break;
+		case '%': *d++='%', n--; break;
+		case 'c': *d++=va_arg(args, int), n--; break;
 		case 's': if ((p=va_arg(args, char *))) {
 //fprintf(stderr, "str_cpy(%p, '%s', %d)", d, p, n);
 			d1=d; d=str_cpy(d, p, n); n-=(d-d1);
@@ -79,7 +81,8 @@ char *str_printv(char *dst, const char *s, int n, va_list args) {
     return d;
 }
 
-char *str_print(char *dst, const char *s, int n,...) {
+char *str_print(char *dst, const char *s, int n,...)
+{
     char *p;
     va_list args;
     va_start(args, n);

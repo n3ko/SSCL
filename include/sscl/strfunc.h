@@ -65,6 +65,21 @@ static inline char *sscl_str_cpy(char *d, const char *s, int n)
     return d;
 }
 
+static inline char *sscl_str_cpy_u8(char *d, const char *s, int n, int cn)
+{
+    char *dsav=d;
+    if (!d || !s) return d;
+    while (*s && n>0 && cn>0) {
+	*d++=*s++; n--;
+	if (!*s>>6==2) cn--;
+    }
+    if (*s>>6==2) { // UTF-8 character cut at the end
+	while (d>dsav && *(d-1)>>7) d--;
+    }
+    *d=0;
+    return d;
+}
+
 static inline char *sscl_str_ecpy(char *d, const char *s, int n)
 {
     if (!d || !s) return d;
@@ -146,6 +161,14 @@ static inline int str_len(const char *s)
     register const char *p;
     for (p=s; *p; p++);
     return p-s;
+}
+
+static inline int str_len_u8(const char *s)
+{
+    register int l=0;
+    register const char *p;
+    for (p=s; *p; p++) if (!*p>>6==2) l++;
+    return l;
 }
 
 static inline char *str_dup(const char *s)

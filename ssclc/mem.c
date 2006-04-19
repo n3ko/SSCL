@@ -208,9 +208,8 @@ void *mem_alloc_heap(unsigned int size)
     register unsigned int wsize=(size+WORD_SIZE-1)>>WORD_SIZE_LOG2;
     void *ret;
     if (!size) return NULL;
-    fprintf(stderr, "mem_alloc_heap(%d(%d))\n", size, wsize);
 #ifdef DEBUG
-    fprintf(stderr, "mem_alloc_heap(%d(%d))", size, wsize);
+    fprintf(stderr, "mem_alloc_heap(%d(%d))\n", size, wsize);
 #endif
     if (wsize>=mem_chunk_n || !mem_chunk[wsize]) {
 #ifdef DEBUG_MEM

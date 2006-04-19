@@ -227,3 +227,8 @@ void slist_foreach(SList *list, void (*func)(int, void *))
     SListItem *p;
     for (p=list->first; p; p=p->next, i++) func(i, p->data);
 }
+
+int list_get_num(List *list)
+{
+    return list->num;
+}
