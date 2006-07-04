@@ -62,6 +62,16 @@ void list_free_with_data(List *list)
     free(list);
 }
 
+void list_clear(List *list)
+{
+    list_done(list);
+}
+
+void list_clear_with_data(List *list)
+{
+    list_done_with_data(list);
+}
+
 void list_append(List *list, void *data)
 {
     if (list->first) {

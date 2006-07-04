@@ -45,6 +45,8 @@ class List: public Container {
 	void *get(int n) {return list_get(&cs, n);}
 	int get_num() {return list_get_num(&cs);}
 	Iterator *first() {return new Iterator(cs.first);}
+	void clear() {list_clear(&cs);}
+	void clear_with_data() {list_clear_with_data(&cs);}
     private:
 	::List cs;
 };
