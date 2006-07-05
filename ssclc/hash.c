@@ -96,6 +96,7 @@ void hash_set(Hash *hash, const char *key, void *data)
 	node->entry[0].key=str_dup(key);
 	node->entry[0].data=data;
 	hash->node[h]=node;
+	hash->count++;
     } else {
 	for (i=0; i<node->count && str_cmp(node->entry[i].key, key); i++);
 	if (i<node->count) node->entry[i].data=data;
@@ -107,11 +108,12 @@ void hash_set(Hash *hash, const char *key, void *data)
 	    node->entry[node->count].data=data;
 	    node->count++;
 	    hash->node[h]=node;
+	    hash->count++;
 	}
     }
 }
 
-const void *hash_delete(const Hash *hash, const char *key)
+const void *hash_delete(Hash *hash, const char *key)
 {
     const void *ret;
     unsigned int i, h=hash->hash_func(key) % hash->size;
@@ -127,6 +129,7 @@ const void *hash_delete(const Hash *hash, const char *key)
 		sizeof(HashNode)+(node->count-1)*sizeof(node->entry[0]));
 	node->count--;
 	hash->node[h]=node;
+	hash->count--;
 	return ret;
     }
     else return NULL;

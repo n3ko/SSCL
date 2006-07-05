@@ -32,6 +32,7 @@
 
 #define BUF_FREE_S(start, ptr, size) ((size)-((ptr)-(start)))
 #define BUF_FREE(start, ptr) (sizeof(start)-((ptr)-(start)))
+#define BF(start, ptr) (sizeof(start)-((ptr)-(start)))
 
 #ifndef str_cpy
 #  define str_cpy(d, s, n) sscl_str_cpy((d), (s), (n))
@@ -85,9 +86,18 @@ static inline char *sscl_str_ecpy(char *d, const char *s, int n)
     if (!d || !s) return d;
     while (*s && n>0) {
 	if (*s=='\'' || *s=='\\') {
-	    *d++='\\'; n--;
-	}
-	*d++=*s++; n--;
+	    if (n>=2) {
+		*d++='\\'; *d++=*s++; n-=2;
+	    } else n--;
+	} else if (*s=='\n') {
+	    if (n>=2) {
+		*d++='\\'; *d++='n'; s++; n-=2;
+	    } else n--;
+	} else if (*s=='\t') {
+	    if (n>=2) {
+		*d++='\\'; *d++='t'; s++; n-=2;
+	    } else n--;
+	} else *d++=*s++; n--;
     }
     *d=0;
     return d;

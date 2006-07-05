@@ -167,7 +167,7 @@ Hash *hash_init(Hash *hash, int size, HashFunc hash_func);
 void hash_done(Hash *hash);
 void *hash_get(const Hash *hash, const char *key);
 void hash_set(Hash *hash, const char *key, void *data);
-const void *hash_delete(const Hash *hash, const char *key);
+const void *hash_delete(Hash *hash, const char *key);
 void hash_foreach(Hash *hash, void (*func)(const char *, void *, void *), void *data);
 void hash_foreach_free_func(const char *key, void *data, void *d);
 char *hash_print(char *d, const char *s, int n, Hash *hash, HashPrintFunc print);

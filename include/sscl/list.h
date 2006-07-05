@@ -30,8 +30,9 @@ class List: public Container {
 	class Iterator {
 	    public:
 		Iterator(ListItem *it) {curitem=it;}
-		void *next() {curitem=curitem->next; return curitem->data;}
-		void *get() {return curitem->data;}
+		void *next() {if (curitem) curitem=curitem->next;
+		    return curitem ? curitem->data : NULL;}
+		void *get() {return curitem ? curitem->data : NULL;}
 		void *operator++() {return next();};
 	    private:
 		ListItem *curitem;
