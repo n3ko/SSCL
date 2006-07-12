@@ -274,6 +274,8 @@ char *str_itoa(char *d, int n, int i, const char fill, int base);
 char *str_printv(char *dst, const char *s, int n, va_list args);
 char *str_print(char *dst, const char *s, int n,...);
 
+int str_splitup(char **dst, char *s, int n, int alloc);
+
 #ifdef __cplusplus
 }
 #endif

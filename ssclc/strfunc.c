@@ -90,3 +90,36 @@ char *str_print(char *dst, const char *s, int n,...)
     va_end(args);
     return p;
 }
+
+int str_splitup(char **dst, char *s, int n, int alloc)
+{
+    char *last=s, *d=s, c;
+    int i=0;
+    while (*s && i<n) {
+	switch (*s) {
+	    case '|':
+		*d=0;
+		dst[i]=alloc ? str_dup(last) : last;
+		last=++s; d=s;
+		i++;
+		break;
+	    case '\n':
+		*d=0; break;
+	    case '\\':
+		s++;
+		switch (c=*s++) {
+		    case 'n': c='\n'; break;
+		    case 't': c='\t'; break;
+		    case 0:   continue;
+		}
+		*d++=c;
+		break;
+	    default:
+		*d++=*s++;
+	}
+    }
+    *d=0;
+    dst[i]=alloc ? str_dup(last) : last;
+    i++;
+    return i;
+}
