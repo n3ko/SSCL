@@ -32,7 +32,7 @@
 
 #define BUF_FREE_S(start, ptr, size) ((size)-((ptr)-(start)))
 #define BUF_FREE(start, ptr) (sizeof(start)-((ptr)-(start)))
-#define BF(start, ptr) (sizeof(start)-((ptr)-(start)))
+#define BF(start, ptr)       BUF_FREE(start,ptr)
 
 #ifndef str_cpy
 #  define str_cpy(d, s, n) sscl_str_cpy((d), (s), (n))
