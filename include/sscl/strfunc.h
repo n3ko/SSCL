@@ -37,6 +37,9 @@
 #ifndef str_cpy
 #  define str_cpy(d, s, n) sscl_str_cpy((d), (s), (n))
 #endif
+#ifndef str_cpy_u8
+#  define str_cpy_8(d, s, n) sscl_str_cpy_u8((d), (s), (n))
+#endif
 #ifndef str_ecpy
 #  define str_ecpy(d, s, n) sscl_str_ecpy((d), (s), (n))
 #endif
@@ -66,19 +69,24 @@ static inline char *sscl_str_cpy(char *d, const char *s, int n)
     return d;
 }
 
-static inline char *sscl_str_cpy_u8(char *d, const char *s, int n, int cn)
+static inline char *sscl_str_cpy_u8(char *d, const char *s, int n)
 {
     char *dsav=d;
     if (!d || !s) return d;
-    while (*s && n>0 && cn>0) {
-	*d++=*s++; n--;
-	if (!*s>>6==2) cn--;
-    }
-    if (*s>>6==2) { // UTF-8 character cut at the end
-	while (d>dsav && *(d-1)>>7) d--;
+    while (*s && n>0) *d++=*s++, n--;
+    if ((*s&0xc0)==0x80) {
+	// Multibyte character has been cut, fix it
+	while (d-1>dsav && (*(d-1)>>7)) d--;
     }
     *d=0;
     return d;
+//    while (*s && n>0 && cn>0) {
+//	*d++=*s++; n--;
+//	if (!*s>>6==2) cn--;
+//    }
+//    if (*s>>6==2) { // UTF-8 character cut at the end
+//	while (d>dsav && *(d-1)>>7) d--;
+//    }
 }
 
 static inline char *sscl_str_ecpy(char *d, const char *s, int n)
