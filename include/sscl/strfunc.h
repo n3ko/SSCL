@@ -38,7 +38,7 @@
 #  define str_cpy(d, s, n) sscl_str_cpy((d), (s), (n))
 #endif
 #ifndef str_cpy_u8
-#  define str_cpy_8(d, s, n) sscl_str_cpy_u8((d), (s), (n))
+#  define str_cpy_u8(d, s, n) sscl_str_cpy_u8((d), (s), (n))
 #endif
 #ifndef str_ecpy
 #  define str_ecpy(d, s, n) sscl_str_ecpy((d), (s), (n))
