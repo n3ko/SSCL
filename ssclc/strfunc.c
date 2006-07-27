@@ -123,3 +123,45 @@ int str_splitup(char **dst, char *s, int n, int alloc)
     i++;
     return i;
 }
+
+// dest buf, source, pad type, length in character. buff need at least 1 byte
+// larger
+char *sscl_str_pad(char *d, const char *s, char type, int l) {
+    int fill=(int)l-str_len(s);
+    if (fill<0) { str_cpy(d, s, (int)l);}
+    else switch(type) {
+	case 'l':
+	    str_cpy(d, s, l); memset(d+strlen(s), ' ', fill); break;
+	case 'r':
+	    memset(d, ' ', fill); str_cpy(d+fill, s, l); break;
+	case 'c':
+	    memset(d, ' ', (int)l); str_cpy(d+fill/2, s, l); break;
+	default:
+	    l=0;
+    }
+    d+=l; *d=0;
+    return d;
+}
+// dest buf, source, pad type, length in character, buff size (byte)
+char *sscl_str_pad_u8(char *d, const char *s, char type, int l, int n) {
+    int fill= (int)l-str_len_u8(s);
+    char *end;
+    printf("-%s-",s);
+    if (fill<0) { end=sscl_str_ncpy_u8(d, s, l, n); fill=0; }
+    else switch(type) {
+	case 'l':
+	    end=sscl_str_cpy(d, s, n-fill); memset(end, ' ', fill);
+	    end+=fill; *end=0; break;
+	case 'r':
+	    memset(d, ' ', fill); end=sscl_str_cpy(d+fill, s, n-fill);
+	    break; //*end=0: sscl done it.
+	case 'c':
+	    memset(d, ' ', fill/2+1); end=sscl_str_ncpy_u8(d+fill/2, s, l, n-fill);
+	    memset(end,' ', fill-fill/2); end+= (fill-fill/2);
+	    *end=0; break;
+	default:
+	    end=d; *end=0;
+    }
+    printf("-%s-\n",d);
+    return end;
+}

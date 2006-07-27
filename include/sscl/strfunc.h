@@ -80,13 +80,23 @@ static inline char *sscl_str_cpy_u8(char *d, const char *s, int n)
     }
     *d=0;
     return d;
-//    while (*s && n>0 && cn>0) {
-//	*d++=*s++; n--;
-//	if (!*s>>6==2) cn--;
-//    }
-//    if (*s>>6==2) { // UTF-8 character cut at the end
-//	while (d>dsav && *(d-1)>>7) d--;
-//    }
+}
+
+static inline char *sscl_str_ncpy_u8(char *d, const char *s, int cnt, int n)
+{
+    char *dsav=d;
+    if (!d || !s) return d;
+    while (*s && n>0 && cnt>0) { 
+	*d++=*s++; //copy
+	n--;
+	if ((*(s-1)&0xc0)==0 || ((*s&0x80)==0) || ((*s&0xc0)==0xc0)) { cnt--; }
+    }
+    if ((*s&0xc0)==0x80) {
+	// Multibyte character has been cut, fix it
+	while (d-1>dsav && (*(d-1)>>7)) d--;
+    }
+    *d=0;
+    return d;
 }
 
 static inline char *sscl_str_ecpy(char *d, const char *s, int n)
@@ -185,7 +195,7 @@ static inline int str_len_u8(const char *s)
 {
     register int l=0;
     register const char *p;
-    for (p=s; *p; p++) if (!*p>>6==2) l++;
+    for (p=s; *p; p++) if ((*p&0xc0)!=0x80) l++;
     return l;
 }
 
@@ -283,6 +293,11 @@ char *str_printv(char *dst, const char *s, int n, va_list args);
 char *str_print(char *dst, const char *s, int n,...);
 
 int str_splitup(char **dst, char *s, int n, int alloc);
+
+// dest buf, source, pad type, length in character & byte
+char *sscl_str_pad(char *d, const char *s, char type, int l);
+// dest buf, source, pad type, length in character, buff size (byte)
+char *sscl_str_pad_u8(char *d, const char *s, char type, int l, int n);
 
 #ifdef __cplusplus
 }
