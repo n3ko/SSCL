@@ -418,6 +418,7 @@ struct _XMLClassHandler {
     SList *child;
 };
 
+/* Not implemented yet, conflict with libxml2.
 void xml_package_init(XMLPackage *pkg, int sc_size, int node_num);
 XMLPackage *xml_package_new(int sc_size, int node_num);
 void xml_package_done(XMLPackage *pkg);
@@ -443,6 +444,7 @@ void xml_parse_template(XMLNode *node);
 void xml_register_handler(char *cls, XMLNewFunc new_func, XMLParseFunc parse_func);
 //void xml_register_handler(char *cls, XMLNewFunc *new_func, XMLAddFunc *add_func);
 void xml_init();
+*/
 
 //************************************
 // Symbion Daemon Tools communication
