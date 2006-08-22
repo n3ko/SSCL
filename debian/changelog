@@ -1,3 +1,18 @@
+libsscl (0.9.7-1) stable; urgency=low
+
+  * 0.9.7
+  * serious stream buffering bugfix
+
+ -- Szilard Hajba <szilu@symbion.hu>  Mon, 21 Aug 2006 23:19:45 +0100
+
+libsscl (0.9.6-1) stable; urgency=low
+
+  * 0.9.5
+  * bugfixes
+  * UTF8 support
+
+ -- Szilard Hajba <szilu@symbion.hu>  Mon,  7 Aug 2006 12:34:48 +0100
+
 libsscl (0.9.4-1) stable; urgency=low
 
   * SDT support improved

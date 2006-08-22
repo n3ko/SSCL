@@ -2,7 +2,7 @@ PREFIX = /usr
 
 MAJOR_VERSION = 0
 MINOR_VERSION = 9
-MICRO_VERSION = 5
+MICRO_VERSION = 7
 
 VERSION = ${MAJOR_VERSION}.${MINOR_VERSION}.${MICRO_VERSION}
 SSCLC_SO_NAME = libssclc.so.${MAJOR_VERSION}.${MINOR_VERSION}
@@ -11,6 +11,8 @@ SSCL_SO_NAME = libsscl.so.${MAJOR_VERSION}.${MINOR_VERSION}
 
 CC = gcc
 LD = gcc
+#CC = diet gcc
+#LD = diet gcc
 INSTALL = /usr/bin/install -c
 LN_S = ln -s
 LIBDIR = $(PREFIX)/lib
