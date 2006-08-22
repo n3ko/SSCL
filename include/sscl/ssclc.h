@@ -202,6 +202,7 @@ Stream *stream_new_file(const char *fn, int flags, const int ilen);
 void stream_done(Stream *s);
 void stream_free(Stream *s);
 int stream_try_read(Stream *s);
+int stream_read(Stream *s, char *buffer, int n);
 int stream_get_c(Stream *s);
 int stream_get_c_wait(Stream *s);
 int stream_get_s(Stream *s, char *buffer, int n);

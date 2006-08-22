@@ -24,6 +24,9 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#define IDX(s, x) (((x)<(s)->ibegin ? (x)+(s)->ibufl : (x))-(s)->ibegin)
+#define INC(s, p) (((p)<(s)->ibuf+(s)->ibufl-1 ? (p)++ : ((p)=(s)->ibuf)))
+
 Stream *stream_init_fd(Stream *s, int fd, const int ilen)
 {
     s->fd=fd;
@@ -92,6 +95,18 @@ int stream_try_read(Stream *s)
     return r<0 ? r : rd;
 }
 
+int stream_read(Stream *s, char *buffer, int n)
+{
+    char *d=buffer;
+    int rd=0, ret;
+    if (s->icnt<n) rd=stream_try_read(s);
+    n=ret=n<s->icnt ? n : s->icnt;
+    while (n) *d++=*s->ibegin, n--, INC(s, s->ibegin), s->icnt--;
+    *d=0;
+fprintf(stderr, "stream_read: ret:%d rd:%d icnt:%d\n", ret, rd, s->icnt);
+    return ret>0 ? ret : rd;
+}
+
 int stream_get_c(Stream *s)
 {
     Bool eof=false;
@@ -115,8 +130,6 @@ int stream_get_c_wait(Stream *s)
 }
 
 #define ENDL(x) ((x)=='\n')
-#define IDX(s, x) (((x)<(s)->ibegin ? (x)+(s)->ibufl : (x))-(s)->ibegin)
-#define INC(s, p) (((p)<(s)->ibuf+(s)->ibufl-1 ? (p)++ : ((p)=(s)->ibuf)))
 int stream_get_s(Stream *s, char *buffer, int n)
 {
     int rd=0;
