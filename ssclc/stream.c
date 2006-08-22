@@ -64,35 +64,39 @@ void stream_free(Stream *s)
     free(s);
 }
 
+/* Reads in as much data as possible to the circular buffer
+ * Returns the number of bytes read, 0 if no data available,
+ *         -1: EOF, -2: Error
+ */
 int stream_try_read(Stream *s)
 {
     // Read from the file if data is available
-    register int r;
+    register int r, rd=0;
     Bool eof=false;
     do {
-	if (s->icnt==s->ibufl) return 0; // Buffer is full, read is impossible
 	r=0;
+	if (s->icnt==s->ibufl) break; // Buffer is full, read is impossible
 	if (s->ibegin+s->icnt<s->ibuf+s->ibufl) {
 	    // No buffer overflow
-	    if (s->ibegin+s->icnt<s->ibuf+s->ibufl) {
-		r=read(s->fd, s->ibegin+s->icnt, s->ibuf+s->ibufl-s->ibegin-s->icnt);
-		if (!r) eof=true;
-	    }
+	    r=read(s->fd, s->ibegin+s->icnt, s->ibuf+s->ibufl-s->ibegin-s->icnt);
+	    if (!r) eof=true;
 	} else {
+	    // Overflow
 	    r=read(s->fd, s->ibegin+s->icnt-s->ibufl, s->ibufl-s->icnt);
 	    if (!r) eof=true;
 	}
-	if (r>0) s->icnt+=r;
-	else if (r<0 && errno!=EAGAIN) return -2;
+	if (r>0) { s->icnt+=r; rd+=r; }
+	else if (r<0) r=errno==EAGAIN ? 0 : -2;
+	else if (!r) r=-1;
     } while (r>0);
-    return eof ? -1 : 0;
+    return r<0 ? r : rd;
 }
 
 int stream_get_c(Stream *s)
 {
     Bool eof=false;
     int ret;
-    if (!s->icnt) eof=stream_try_read(s);
+    if (!s->icnt) eof=stream_try_read(s)<0;
     if (s->icnt--) {
 	ret=*s->ibegin++;
 	if (s->inl==s->ibegin-1) s->inl++;
@@ -111,7 +115,43 @@ int stream_get_c_wait(Stream *s)
 }
 
 #define ENDL(x) ((x)=='\n')
-#define ABSV(x) ((x)<s->ibegin ? (x)+s->ibufl : (x))
+#define IDX(s, x) (((x)<(s)->ibegin ? (x)+(s)->ibufl : (x))-(s)->ibegin)
+#define INC(s, p) (((p)<(s)->ibuf+(s)->ibufl-1 ? (p)++ : ((p)=(s)->ibuf)))
+int stream_get_s(Stream *s, char *buffer, int n)
+{
+    int rd=0;
+    // Read from the file if data is available
+//    int rd=stream_try_read(s);
+    // Search for a newline character
+    int nb=s->icnt-IDX(s, s->inl);
+//fprintf(stderr, "\n\nBEG:get_s (%s): nl:%d icnt:%d ibuf:%p ibegin:%p inl=%p\n", s->ibuf, IDX(s, s->inl), s->icnt, s->ibuf, s->ibegin, s->inl);
+    while (nb>0 && !ENDL(*s->inl)) INC(s, s->inl), nb--;
+    // Found?
+    if (!nb) {
+	// NL not found, trying to read
+	rd=stream_try_read(s);
+	// Search further
+	nb=s->icnt-IDX(s, s->inl);
+	while (nb>0 && !ENDL(*s->inl)) INC(s, s->inl), nb--;
+    }
+    // If a newline was found then copy the line to the buffer
+    if ((s->ibufl==s->icnt) || IDX(s, s->inl)<s->icnt) {
+	char *d=buffer;
+	while (!ENDL(*s->ibegin) && s->icnt>0 && n) {
+	    if (*s->ibegin!='\r') *d++=*s->ibegin, n--;
+	    INC(s, s->ibegin);
+	    s->icnt--;
+	}
+	*d=0; if (ENDL(*s->inl)) INC(s, s->inl);
+	if (ENDL(*s->ibegin)) { INC(s, s->ibegin); s->icnt--; }
+//fprintf(stderr, "END:get_s (%s): nl:%d icnt:%d ibuf:%p ibegin:%p inl=%p\n", s->ibuf, IDX(s, s->inl), s->icnt, s->ibuf, s->ibegin, s->inl);
+	return d-buffer;
+    } else {
+	if (rd<0) return rd;
+	else { *buffer=0; return 0; }
+    }
+}
+/*
 int stream_get_s(Stream *s, char *buffer, int n)
 {
     char *iend;
@@ -121,12 +161,13 @@ int stream_get_s(Stream *s, char *buffer, int n)
     while (s->inl<s->ibuf+s->ibufl && s->inl<s->ibegin+s->icnt && !ENDL(*s->inl)) s->inl++;
     if (s->inl==s->ibuf+s->ibufl) s->inl=s->ibuf;
     iend=s->ibegin+s->icnt;
-    if (iend>s->ibuf+s->ibufl) iend-=s->ibufl;
+    if (iend>=s->ibuf+s->ibufl) iend-=s->ibufl;
     while (s->inl<iend && !ENDL(*s->inl)) s->inl++;
-//fprintf(stderr, "get_s NL(): %d %d %p %p %p\n", s->inl-s->ibuf, s->icnt, s->ibuf, s->ibegin, iend, s->inl);
+fprintf(stderr, "get_s NL(): %d %d %p %p %p %p\n", s->inl-s->ibuf, s->icnt, s->ibuf, s->ibegin, iend, s->inl);
     // If a newline was found then copy the line to the buffer
 //    if (ENDL(*s->inl)) {
-    if ((s->ibegin>=iend && (s->inl<iend || s->inl>s->ibegin))
+    if ((s->ibegin>=iend && s->ibufl && (s->inl<iend || s->inl>=s->ibegin))
+	    || (s->ibufl==s->icnt)
 	    || (s->ibegin<iend && s->ibegin<=s->inl && s->inl<iend)) {
 	char *d=buffer, *st=s->ibegin;
 	if (s->inl<st) {
@@ -135,7 +176,8 @@ int stream_get_s(Stream *s, char *buffer, int n)
 	}
 	while (st<s->inl && n) if (*st!='\r') *d++=*st++, n--; else st++;
 	*d=0; s->inl++;
-	s->icnt-=ABSV(s->inl)-s->ibegin;
+fprintf(stderr, "get_s IDX: %d\n", IDX(s, s->inl));
+	s->icnt-=IDX(s, s->inl);
 	s->ibegin=s->inl;
 	return d-buffer;
     } else {
@@ -143,7 +185,7 @@ int stream_get_s(Stream *s, char *buffer, int n)
 	else return 0;
     }
 }
-
+*/
 int stream_get_s_wait(Stream *s, char *buffer, int n)
 {
     int ret;
