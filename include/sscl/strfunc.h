@@ -76,7 +76,7 @@ static inline char *sscl_str_cpy_u8(char *d, const char *s, int n)
     while (*s && n>0) *d++=*s++, n--;
     if ((*s&0xc0)==0x80) {
 	// Multibyte character has been cut, fix it
-	while (d-1>dsav && (*(d-1)>>7)) d--;
+	while (d-1>dsav && ((unsigned char)*(d-1)>>7)) d--;
     }
     *d=0;
     return d;
