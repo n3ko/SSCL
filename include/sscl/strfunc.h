@@ -61,6 +61,13 @@ extern char *_str_tok_internal_ptr;
 extern char *_str_split_internal_ptr;
 extern char *_str_cut_internal_ptr;
 
+typedef struct {
+    unsigned int ndef;		// Number of characters in the array
+    unsigned int bdef;		// Start index of the array
+    unsigned int bitshift;
+    int *def;                   // Pointer to an int[ndef] array
+} Locale;
+
 static inline char *sscl_str_cpy(char *d, const char *s, int n)
 {
     if (!d || !s) return d;
@@ -298,6 +305,11 @@ int str_splitup(char **dst, char *s, int n, int alloc);
 char *sscl_str_pad(char *d, const char *s, char type, int l);
 // dest buf, source, pad type, length in character, buff size (byte)
 char *sscl_str_pad_u8(char *d, const char *s, char type, int l, int n);
+
+int str_utf8_decomp(char **s);
+Locale *locale_init(Locale *loc, char *localedef);
+void locale_done(Locale *loc);
+int str_cmp_locale(Locale *loc, const char *s1, const char *s2);
 
 #ifdef __cplusplus
 }

@@ -131,7 +131,7 @@ char *sscl_str_pad(char *d, const char *s, char type, int l) {
     if (fill<0) { str_cpy(d, s, (int)l);}
     else switch(type) {
 	case 'l':
-	    str_cpy(d, s, l); memset(d+strlen(s), ' ', fill); break;
+	    str_cpy(d, s, l); memset(d+str_len(s), ' ', fill); break;
 	case 'r':
 	    memset(d, ' ', fill); str_cpy(d+fill, s, l); break;
 	case 'c':
@@ -146,7 +146,7 @@ char *sscl_str_pad(char *d, const char *s, char type, int l) {
 char *sscl_str_pad_u8(char *d, const char *s, char type, int l, int n) {
     int fill= (int)l-str_len_u8(s);
     char *end;
-    printf("-%s-",s);
+//    printf("-%s-",s);
     if (fill<0) { end=sscl_str_ncpy_u8(d, s, l, n); fill=0; }
     else switch(type) {
 	case 'l':
@@ -164,4 +164,133 @@ char *sscl_str_pad_u8(char *d, const char *s, char type, int l, int n) {
     }
     printf("-%s-\n",d);
     return end;
+}
+
+int str_utf8_decomp(char **str)
+{
+    unsigned char **s=(unsigned char **)str;
+    int ret;
+    if (((*s)[0] & 0x80) == 0) {
+	// 0xxxxxxx
+	ret=*(*s)++;
+    } else if ((((*s)[0] & 0xe0) == 0xc0) && (((*s)[1] & 0xc0) == 0x80)) {
+	// 110xxxxx 10xxxxxx
+	ret=((*s)[0] & 0x1f )<<6 | ((*s)[1] & 0x3f);
+	(*s)+=2;
+    } else if ((((*s)[0] & 0xf0) == 0xe0) && (((*s)[1] & 0xc0) == 0x80)
+	    && (((*s)[2] & 0xc0) == 0x80)) {
+	// 1110xxxx 10xxxxxx 10xxxxxx
+	ret=((*s)[0] & 0x0f )<<12
+		| ((*s)[1] & 0x3f)<<6
+		| ((*s)[2] & 0x3f);
+	(*s)+=3;
+    } else if ((((*s)[0] & 0xf8) == 0xf0) && (((*s)[1] & 0xc0) == 0x80)
+	    && (((*s)[2] & 0xc0) == 0x80) && (((*s)[3] & 0xc0) == 0x80)) {
+	// 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+	ret=((*s)[0] & 0x07 )<<18
+		| ((*s)[1] & 0x3f)<<12
+		| ((*s)[2] & 0x3f)<<6
+		| ((*s)[3] & 0x3f);
+	(*s)+=4;
+    } else if ((((*s)[0] & 0xfc) == 0xf8) && (((*s)[1] & 0xc0) == 0x80)
+	    && (((*s)[2] & 0xc0) == 0x80) && (((*s)[3] & 0xc0) == 0x80)
+	    && (((*s)[4] & 0xc0) == 0x80)) {
+	// 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+	ret=((*s)[0] & 0x03 )<<24
+		| ((*s)[1] & 0x3f)<<18
+		| ((*s)[2] & 0x3f)<<12
+		| ((*s)[3] & 0x3f)<<6
+		| ((*s)[4] & 0x3f);
+	(*s)+=5;
+    } else if ((((*s)[0] & 0xfe) == 0xfc) && (((*s)[1] & 0xc0) == 0x80)
+	    && (((*s)[2] & 0xc0) == 0x80) && (((*s)[3] & 0xc0) == 0x80)
+	    && (((*s)[4] & 0xc0) == 0x80) && (((*s)[5] & 0xc0) == 0x80)) {
+	// 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+	ret=((*s)[0] & 0x01 )<<30
+		| ((*s)[1] & 0x3f)<<24
+		| ((*s)[2] & 0x3f)<<18
+		| ((*s)[3] & 0x3f)<<12
+		| ((*s)[4] & 0x3f)<<6
+		| ((*s)[5] & 0x3f);
+	(*s)+=6;
+    } else if (((*s)[0] == 0xfe) && (((*s)[1] & 0xc0) == 0x80)
+	    && (((*s)[2] & 0xc0) == 0x80) && (((*s)[3] & 0xc0) == 0x80)
+	    && (((*s)[4] & 0xc0) == 0x80) && (((*s)[5] & 0xc0) == 0x80)
+	    && (((*s)[6] & 0xc0) == 0x80)) {
+	// 11111110 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+	ret=((*s)[1] & 0x03)<<30
+		| ((*s)[2] & 0x3f)<<24
+		| ((*s)[3] & 0x3f)<<18
+		| ((*s)[4] & 0x3f)<<12
+		| ((*s)[5] & 0x3f)<<6
+		| ((*s)[6] & 0x3f);
+	(*s)+=7;
+    } else {
+	// Error
+	printf("Error in UTF-8 sequence\n");
+	ret=1;
+    }
+    return ret;
+}
+
+#include <stdio.h>
+Locale *locale_init(Locale *loc, char *localedef)
+{
+    char *s=localedef+8, *sav; // Skip 'lang:hu:
+    unsigned int min=0xffffff, max=0, i;
+    loc->bitshift=*s++-'0'; // FIXME
+    s++; // Skip ':'
+    sav=s;
+    while (*s) {
+	int from=str_utf8_decomp(&s);
+	if (from<min) min=from;
+	if (from>max) max=from;
+	if (*s) {
+	    str_utf8_decomp(&s);
+	    while (*s && *s!=',') s++;
+	    s++;
+	}
+    }
+//    fprintf(stderr, "min: %08x   max: %08x\n", min, max);
+    s=sav;
+    loc->ndef=max-min;
+    loc->bdef=min;
+    loc->def=malloc((1+max-min)*sizeof(int));
+    for (i=min; i<max; i++) {
+	loc->def[i-min]=0;
+    }
+    while (*s) {
+	int from=str_utf8_decomp(&s);
+	if (*s) {
+	    int val=0, to=str_utf8_decomp(&s);
+	    char op=*s;
+	    if (op=='+' || op=='-') {
+		s++;
+		val=*s++-'0'; // FIXME
+	    }
+	    if (*s==',') s++;
+//	    fprintf(stderr, "map: %08x -> %08x\n", from,
+//		    (to<<loc->bitshift)+(op=='+'?+1:-1)*val);
+	    loc->def[from-min]=(to<<loc->bitshift)+(op=='+'?+1:-1)*val;
+	}
+    }
+    return loc;
+}
+
+void locale_done(Locale *loc)
+{
+    if (loc->def) free(loc->def);
+}
+
+int str_cmp_locale(Locale *loc, const char *s1, const char *s2)
+{
+    int c1, c2, v1=0, v2=0;
+    while (*s1 && *s2 && v1==v2) {
+	c1=str_utf8_decomp(&s1);
+	c2=str_utf8_decomp(&s2);
+	v1=loc->def[c1-loc->bdef] ? loc->def[c1-loc->bdef] : c1<<loc->bitshift;
+	v2=loc->def[c2-loc->bdef] ? loc->def[c2-loc->bdef] : c2<<loc->bitshift;
+//	fprintf(stderr, "str_locale_cmp: %08x ?= %08x (%08x ?= %08x)\n", c1, c2, v1, v2);
+    }
+    return v1-v2;
 }
