@@ -294,6 +294,8 @@ static inline char *str_cut(char *dst, char *src, const char *delim, int length)
     return dst;
 }
 
+char *sscl_str_ucpy(char *d, const char *s, int n);
+
 char *str_itoa(char *d, int n, int i, const char fill, int base);
 
 char *str_printv(char *dst, const char *s, int n, va_list args);

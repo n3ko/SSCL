@@ -23,6 +23,29 @@ char *_str_split_internal_ptr;
 char *_str_cut_internal_ptr;
 char *_str_num_digits="0123456789ABCDEF";
 
+char *sscl_str_ucpy(char *d, const char *s, int n)
+{
+    char *hex = "0123456789ABCDEF";
+    while (*s && n>0) {
+	if (*s == ' ') { *d++='+'; }
+	else if (('a' <= *s && *s <= 'z') || ('A' <= *s && *s <= 'Z')
+	    || ('0' <= *s && *s <= '9') || *s == '-'
+	    || *s == '_' || *s == '.') *d++=*s;
+	else {
+	    if (n>=3) {
+		*d++='%';
+		*d++=hex[(*s)/16];
+		*d++=hex[*s & 0x0f];
+		n-=3;
+	    } else n=0;
+	}
+	s++;
+    }
+    *d=0;
+    return d;
+
+}
+
 char *str_itoa(char *d, int n, int i, const char fill, int base)
 {
     char num[32], *p=num;
@@ -70,6 +93,10 @@ char *str_printv(char *dst, const char *s, int n, va_list args)
 			  *d++='0'; *d++='x';
 			d=str_itoa(d, n, va_arg(args, int), 0, 16); n-=(d-d1);
 			break;
+		case 'U': if ((p=va_arg(args, char *))) {
+			d1=d; d=sscl_str_ucpy(d, p, n); n-=(d-d1);
+		    }
+		    break;
 		default:;
 //			throw Error("E-STR", "TYPCHR", "Invalid type char '%c'", *s);
 	    }
