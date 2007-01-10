@@ -42,6 +42,18 @@ static inline int file_get_c_f(LexicalAnalyzer *la)
     return c;
 }
 
+static inline int stream_get_c_f(LexicalAnalyzer *la)
+{
+    int c=stream_get_c(STREAM(la->data));
+    if (c!='\n') {
+	la->file_char++;
+    } else {
+	la->file_line++;
+	la->file_char=1;
+    }
+    return c;
+}
+
 int lexical_analyzer_get_pos_line(LexicalAnalyzer *la)
 {
     return la->file_line;
@@ -79,6 +91,13 @@ int lexical_analyzer_init_from_file(LexicalAnalyzer *la, LexicalGrammar *gr,
 	FILE *f, const char *filename, const int buflen)
 {
     if (f) return lexical_analyzer_init(la, gr, (GetCharFunc*)&file_get_c_f, f, filename, buflen);
+    else return -1;
+}
+
+int lexical_analyzer_init_from_stream(LexicalAnalyzer *la, LexicalGrammar *gr,
+	Stream *s, const char *filename, const int buflen)
+{
+    if (s) return lexical_analyzer_init(la, gr, (GetCharFunc*)&stream_get_c_f, s, filename, buflen);
     else return -1;
 }
 

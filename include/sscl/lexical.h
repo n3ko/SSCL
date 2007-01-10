@@ -62,7 +62,7 @@ class LexicalAnalyzer {
 	Token operator++() {return next();};
 	Token operator++(int) {Token t=cs.token; next(); return t;};
 	Token operator*() {return get_token();};
-    protected:
+//    protected:
 	::LexicalAnalyzer cs;
 };
 

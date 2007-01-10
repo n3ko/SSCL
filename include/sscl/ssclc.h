@@ -305,6 +305,8 @@ int lexical_analyzer_init_from_str(LexicalAnalyzer *la, LexicalGrammar *gr,
 	const char *str, const int buflen);
 int lexical_analyzer_init_from_file(LexicalAnalyzer *la, LexicalGrammar *gr,
 	FILE *f, const char *filename, const int buflen);
+int lexical_analyzer_init_from_stream(LexicalAnalyzer *la, LexicalGrammar *gr,
+	Stream *s, const char *filename, const int buflen);
 
 void lexical_analyzer_done(LexicalAnalyzer *la);
 Token lexical_analyzer_next(LexicalAnalyzer *la);
@@ -330,7 +332,7 @@ typedef struct _SScriptArg SScriptArg;
 typedef struct _SScriptArgList SScriptArgList;
 typedef SScriptCmd *(*SScriptCmdParser)(LexicalAnalyzer *la);
 #define SSCRIPT_CMD_FUNC(x) ((SScriptCmdFunc)x)
-typedef int (*SScriptCmdHandler)(SScriptInterp *interp, void *_this, void *data);
+typedef int (*SScriptCmdHandler)(SScriptInterp *interp, void *_this, void *cmddata, void *data);
 typedef void (*SScriptCmdDestroyHandler)(SScriptCmd *cmd);
 
 struct _SScriptGrammar {
@@ -370,12 +372,13 @@ void sscript_block_done(SScriptBlock *blk);
 
 SScriptInterp *sscript_interp_init(SScriptInterp *interp, int size);
 void sscript_interp_done(SScriptInterp *interp);
-int sscript_interp_run(SScriptInterp *interp, SScriptBlock *blk);
+int sscript_interp_run(SScriptInterp *interp, SScriptBlock *blk, void *data);
 
 SScriptArg *sscript_arglist_parse(LexicalAnalyzer *la);
 void sscript_arglist_free(SScriptArg *arglist);
 char *sscript_expr_parse(SScriptInterp *interp, LexicalAnalyzer *la);
-void sscript_arg_parse(SScriptInterp *interp, SScriptArg *arglist, LexicalAnalyzer *la);
+int sscript_arg_parse(SScriptInterp *interp, SScriptArg *arglist, LexicalAnalyzer *la);
+int sscript_arg_parse_ex(SScriptInterp *interp, LexicalAnalyzer *la);
 
 //*********
 // XML

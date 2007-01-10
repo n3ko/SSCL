@@ -38,9 +38,11 @@ void sscript_grammar_add_cmd(SScriptGrammar *gr, const char *name, SScriptCmdPar
 // Block
 SScriptBlock *sscript_block_init(SScriptBlock *blk, SScriptGrammar *gr, LexicalAnalyzer *la)
 {
+    Bool error=false;
+    if (!blk) blk=NEW(SScriptBlock);
     slist_init(&blk->cmds);
     if (la->token==t_lbrace) lexical_analyzer_next(la);
-    while (la->token!=t_rbrace && la->token!=t_eos) {
+    while (la->token!=t_rbrace && la->token!=t_eos && !error) {
 	if (la->token==t_word) {
 	    SScriptCmdParser parser=hash_get(&gr->cmds, la->v_str);
 	    if (parser) {
@@ -48,11 +50,11 @@ SScriptBlock *sscript_block_init(SScriptBlock *blk, SScriptGrammar *gr, LexicalA
 		lexical_analyzer_next(la);
 		cmd=parser(la);
 		slist_append(&blk->cmds, cmd);
-	    }
-	}
+	    } else error=true;
+	} else error=true;
 	if (la->token==t_semicolon) lexical_analyzer_next(la);
     }
-    return blk;
+    return error ? NULL : blk;
 }
 
 void sscript_block_done(SScriptBlock *blk)
@@ -79,12 +81,12 @@ void sscript_interp_done(SScriptInterp *interp)
     hash_done(&interp->var);
 }
 
-int sscript_interp_run(SScriptInterp *interp, SScriptBlock *blk)
+int sscript_interp_run(SScriptInterp *interp, SScriptBlock *blk, void *data)
 {
     SListItem *p;
     for (p=blk->cmds.first; p; p=p->next) {
 	SScriptCmd *cmd=(SScriptCmd*)p->data;
-	cmd->handler(interp, NULL, cmd->data);
+	cmd->handler(interp, NULL, cmd->data, data);
     }
     return 0;
 }
@@ -121,6 +123,7 @@ SScriptArg *sscript_arglist_parse(LexicalAnalyzer *la)
 	    n++;
 	} else error=true;
     }
+    if (!error && la->token==t_rparen) lexical_analyzer_next(la);
     if (error) {
 	int i;
 	for (i=0; i<n; i++) free(arglist[i].name);
@@ -148,6 +151,7 @@ char *sscript_expr_parse(SScriptInterp *interp, LexicalAnalyzer *la)
 {
     char *ret=NULL;
     switch (la->token) {
+	case t_int:
 	case t_sqstring:
 	case t_string:
 	    ret=str_dup(la->v_str); break;
@@ -159,7 +163,7 @@ char *sscript_expr_parse(SScriptInterp *interp, LexicalAnalyzer *la)
     return ret;
 }
 
-void sscript_arg_parse(SScriptInterp *interp, SScriptArg *arglist, LexicalAnalyzer *la)
+int sscript_arg_parse(SScriptInterp *interp, SScriptArg *arglist, LexicalAnalyzer *la)
 {
     Bool error=false;
     int n=0, i;
@@ -196,4 +200,32 @@ void sscript_arg_parse(SScriptInterp *interp, SScriptArg *arglist, LexicalAnalyz
 	}
 	if (la->token==t_comma) lexical_analyzer_next(la);
     }
+    if (error) return 1;
+    return 0;
+}
+
+int sscript_arg_parse_ex(SScriptInterp *interp, LexicalAnalyzer *la)
+{
+    Bool error=false;
+    char name[65], *val, *nval;
+    if (la->token!=t_lparen) error=true;
+    lexical_analyzer_next(la);
+    while (la->token!=t_rparen && !error) {
+	if (la->token!=t_oper || str_cmp(la->v_str, "@")) {error=true; continue;}
+	lexical_analyzer_next(la);
+	if (la->token!=t_word) {error=true; continue;}
+	str_cpy(name, la->v_str, sizeof(name));
+	lexical_analyzer_next(la);
+	if (la->token!=t_oper || str_cmp(la->v_str, "=")) {error=true; continue;}
+	lexical_analyzer_next(la);
+	nval=sscript_expr_parse(interp, la);
+	if ((val=hash_get(&interp->var, name))) {
+	    hash_delete(&interp->var, name); free(val);
+	}
+	if (nval) hash_set(&interp->var, name, nval);
+	else {error=true; continue;}
+	if (la->token==t_comma) lexical_analyzer_next(la);
+    }
+    if (error) return 1;
+    return 0;
 }

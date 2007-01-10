@@ -216,8 +216,9 @@ int stream_put_c(Stream *s, const char c)
 int stream_write(Stream *s, const char *buffer, int n)
 {
     int st=n, w;
-    while (st>0) {
+    while (st>0 && (w!=-1 || errno==EAGAIN)) {
 	st-=w=write(s->fd, buffer+n-st, st);
+	if (w>0) st-=w;
 	if (!w) usleep(100);
     }
     return w<0 ? w : n;
@@ -241,7 +242,8 @@ int stream_print(Stream *s, const char *format,...)
     char buf[8001];
     va_list args;
     va_start(args, format);
-    ret=stream_put_s(s, str_printv(buf, format, 8000, args));
+    str_printv(buf, format, 8000, args);
+    ret=stream_put_s(s, buf);
     va_end(args);
     return ret;
 }
