@@ -110,7 +110,7 @@ static inline char *sscl_str_ecpy(char *d, const char *s, int n)
 {
     if (!d || !s) return d;
     while (*s && n>0) {
-	if (*s=='\'' || *s=='\\') {
+	if (*s=='\'' || *s=='\\' || *s=='|') {
 	    if (n>=2) {
 		*d++='\\'; *d++=*s++; n-=2;
 	    } else n--;

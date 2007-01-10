@@ -52,7 +52,7 @@ void hash_done(Hash *hash)
 	HashNode *node=hash->node[i];
 	if (node) for (j=0; j<node->count; j++)
 	    free(node->entry[j].key);
-	mem_free_heap(hash->node[i], sizeof(HashNode)+sizeof(node->entry[0]));
+	if (hash->node[i]) mem_free_heap(hash->node[i], sizeof(HashNode)+sizeof(node->entry[0]));
     }
     free(hash->node);
 }
@@ -152,17 +152,17 @@ void hash_foreach_free_func(const char *key, void *data, void *d)
 
 char *hash_print(char *d, const char *s, int n, Hash *hash, HashPrintFunc print)
 {
-    char k[1024];
+    char k[1024], *p;
     int i;
     while (*s && n>0) {
 	if (*s=='$') {
 	    s++;
 	    if (*s=='$') *d++=*s++;
 	    else {
-		for (i=0; (('a'<=s[i] && s[i]<='z') || ('0'<=s[i] && s[i]<='9')
-			|| ('a'<=s[i] && s[i]<='z') || s[i]=='_') && i<1024;
-			i++) k[i]=s[i];
-		k[i]=0; s+=i;
+		for (i=0, p=k; (('A'<=*s && *s<='Z') || ('0'<=*s && *s<='9')
+			|| ('a'<=*s && *s<='z') || *s=='_') && BF(k, p);
+			i++) *p++=*s++;
+		*p=0;
 		if (hash) {
 		    char *d1=d;
 		    if (!print) d=str_ecpy(d, hash_get(hash, k), n);
@@ -170,7 +170,7 @@ char *hash_print(char *d, const char *s, int n, Hash *hash, HashPrintFunc print)
 		    n-=d-d1;
 		}
 	    }
-	} else *d++=*s++, n++;
+	} else *d++=*s++, n--;
     }
     *d=0;
     return d;
