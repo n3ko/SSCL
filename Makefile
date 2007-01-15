@@ -35,20 +35,20 @@ install_root:
 	$(INSTALL) --mode 0644 include/sscl/*.h $(INCLUDEDIR)
 
 install: all
-	@if [ $$UID != '0' ]; then echo "Root password is required.."; su -c '${MAKE}  install_root'; else ${MAKE} install_root; fi
+	@if [ "`id -u`" != '0' ]; then echo "Root password is required.."; su -c '${MAKE}  install_root'; else ${MAKE} install_root; fi
 
 uninstall_root:
 	rm -f $(LIBDIR)/libssclc.so* $(LIBDIR)/libsscl.a
 	rm -rf $(INCLUDEDIR)
 
 uninstall:
-	@if [ $$UID != '0' ]; then echo "Root password is required.."; su -c '${MAKE}  uninstall_root'; else ${MAKE} install_root; fi
+	@if [ `id -u` != '0' ]; then echo "Root password is required.."; su -c '${MAKE}  uninstall_root'; else ${MAKE} install_root; fi
 
 rpm_root: install sscl.spec
 	rpm -bb sscl.spec
 
 rpm: sscl.spec
-	@if [ $$UID != '0' ]; then echo "Root password is required.."; su -c '${MAKE}  rpm_root'; else ${MAKE} rpm_root; fi
+	@if [ `id -u` != '0' ]; then echo "Root password is required.."; su -c '${MAKE}  rpm_root'; else ${MAKE} rpm_root; fi
 
 deb:
 	dpkg-buildpackage -rfakeroot
@@ -63,7 +63,7 @@ build:
 
 #---------------------------------------- Template rules
 $(SSCLC_LIB): $(SSCLC_OBJ)
-	ld $(CLDOPTS) -o $@ $(SSCLC_OBJ)
+	$(LD) $(CLDOPTS) -o $@ $(SSCLC_OBJ)
 
 $(SSCL_AR): $(SSCL_OBJ)
 	ar cru $@ $(SSCL_OBJ)

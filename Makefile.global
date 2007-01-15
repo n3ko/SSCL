@@ -11,6 +11,8 @@ SSCL_SO_NAME = libsscl.so.${MAJOR_VERSION}.${MINOR_VERSION}
 
 CC = gcc
 LD = gcc
+#CC = i386-uclibc-linux-gcc
+#LD = i386-uclibc-linux-gcc
 #CC = diet gcc
 #LD = diet gcc
 INSTALL = /usr/bin/install -c
@@ -20,7 +22,7 @@ INCLUDEDIR = $(PREFIX)/include/sscl
 
 CINCLUDE = -I./include
 CFLAGS = -Wall -g3 -fPIC
-CLDFLAGS = -shared -soname $(SSCLC_SO_NAME)
+CLDFLAGS = -shared -Xlinker -soname -Xlinker $(SSCLC_SO_NAME)
 COPTS = $(CFLAGS) $(CINCLUDE)
 CLDLIBS = -L/usr/lib
 CLDOPTS = $(CLDFLAGS) $(CLDLIBS)
