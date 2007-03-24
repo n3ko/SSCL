@@ -217,7 +217,7 @@ int stream_write(Stream *s, const char *buffer, int n)
 {
     int st=n, w;
     while (st>0 && (w!=-1 || errno==EAGAIN)) {
-	st-=w=write(s->fd, buffer+n-st, st);
+	w=write(s->fd, buffer+n-st, st);
 	if (w>0) st-=w;
 	if (!w) usleep(100);
     }
