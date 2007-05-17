@@ -125,8 +125,11 @@ NetServer *netserver_init(NetServer *serv, const NetConnFamily family, const cha
     serv->family=family;
     if (family==nf_inet) { // Inet socket
 	struct sockaddr_in sa;
+	int so_val=1;
 	serv->fd=socket(PF_INET, SOCK_STREAM, 0);
 	if (serv->fd<0) return NULL;
+	setsockopt(serv->fd, SOL_SOCKET, SO_REUSEADDR,
+		&so_val, sizeof(so_val));
 	sa.sin_family=AF_INET;
 	if (addr) {
 	    inet_aton(addr, &sa.sin_addr);
