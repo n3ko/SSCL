@@ -315,9 +315,45 @@ int str_cmp_locale(Locale *loc, const char *s1, const char *s2)
     while (*s1 && *s2 && v1==v2) {
 	c1=str_utf8_decomp(&s1);
 	c2=str_utf8_decomp(&s2);
-	v1=loc->def[c1-loc->bdef] ? loc->def[c1-loc->bdef] : c1<<loc->bitshift;
-	v2=loc->def[c2-loc->bdef] ? loc->def[c2-loc->bdef] : c2<<loc->bitshift;
+	if (c1<loc->bdef || c1>loc->bdef+loc->ndef || !loc->def[c1-loc->bdef])
+	    v1=c1<<loc->bitshift;
+	else v1=loc->def[c1-loc->bdef];
+	if (c2<loc->bdef || c2>loc->bdef+loc->ndef || !loc->def[c2-loc->bdef])
+	    v2=c2<<loc->bitshift;
+	else v2=loc->def[c2-loc->bdef];
+//	v1=loc->def[c1-loc->bdef] ? loc->def[c1-loc->bdef] : c1<<loc->bitshift;
+//	v2=loc->def[c2-loc->bdef] ? loc->def[c2-loc->bdef] : c2<<loc->bitshift;
 //	fprintf(stderr, "str_locale_cmp: %08x ?= %08x (%08x ?= %08x)\n", c1, c2, v1, v2);
     }
     return *s1 && *s2 ? v1-v2 : *s1-*s2;
+}
+
+int str_ncmp_locale(Locale *loc, const char *s1, const char *s2, int n)
+{
+    int c1, c2, v1, v2;
+    c1=str_utf8_decomp(&s1);
+    c2=str_utf8_decomp(&s2);
+    if (c1<loc->bdef || c1>loc->bdef+loc->ndef || !loc->def[c1-loc->bdef])
+	v1=c1<<loc->bitshift;
+    else v1=loc->def[c1-loc->bdef];
+    if (c2<loc->bdef || c2>loc->bdef+loc->ndef || !loc->def[c2-loc->bdef])
+	v2=c2<<loc->bitshift;
+    else v2=loc->def[c2-loc->bdef];
+    if (n) n--;
+    else return 0;
+    while (*s1 && *s2 && v1==v2 && n>0) {
+	c1=str_utf8_decomp(&s1);
+	c2=str_utf8_decomp(&s2);
+	if (c1<loc->bdef || c1>loc->bdef+loc->ndef || !loc->def[c1-loc->bdef])
+	    v1=c1<<loc->bitshift;
+	else v1=loc->def[c1-loc->bdef];
+	if (c2<loc->bdef || c2>loc->bdef+loc->ndef || !loc->def[c2-loc->bdef])
+	    v2=c2<<loc->bitshift;
+	else v2=loc->def[c2-loc->bdef];
+	n--;
+//	v1=loc->def[c1-loc->bdef] ? loc->def[c1-loc->bdef] : c1<<loc->bitshift;
+//	v2=loc->def[c2-loc->bdef] ? loc->def[c2-loc->bdef] : c2<<loc->bitshift;
+//	fprintf(stderr, "str_locale_cmp: %08x ?= %08x (%08x ?= %08x)\n", c1, c2, v1, v2);
+    }
+    return v1-v2;
 }

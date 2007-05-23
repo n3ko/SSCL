@@ -312,6 +312,7 @@ int str_utf8_decomp(char **s);
 Locale *locale_init(Locale *loc, char *localedef);
 void locale_done(Locale *loc);
 int str_cmp_locale(Locale *loc, const char *s1, const char *s2);
+int str_ncmp_locale(Locale *loc, const char *s1, const char *s2, int n);
 
 #ifdef __cplusplus
 }
