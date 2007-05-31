@@ -312,7 +312,7 @@ void locale_done(Locale *loc)
 int str_cmp_locale(Locale *loc, const char *s1, const char *s2)
 {
     int c1, c2, v1=0, v2=0;
-    while (*s1 && *s2 && v1==v2) {
+    while ((*s1 || *s2) && v1==v2) {
 	c1=str_utf8_decomp(&s1);
 	c2=str_utf8_decomp(&s2);
 	if (c1<loc->bdef || c1>loc->bdef+loc->ndef || !loc->def[c1-loc->bdef])
@@ -325,7 +325,8 @@ int str_cmp_locale(Locale *loc, const char *s1, const char *s2)
 //	v2=loc->def[c2-loc->bdef] ? loc->def[c2-loc->bdef] : c2<<loc->bitshift;
 //	fprintf(stderr, "str_locale_cmp: %08x ?= %08x (%08x ?= %08x)\n", c1, c2, v1, v2);
     }
-    return *s1 && *s2 ? v1-v2 : *s1-*s2;
+    return v1-v2;
+    //return *s1 && *s2 ? v1-v2 : *s1-*s2;
 }
 
 int str_ncmp_locale(Locale *loc, const char *s1, const char *s2, int n)
