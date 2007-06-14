@@ -169,6 +169,7 @@ static inline int str_cmp(const char *s1, const char *s2)
 
 static inline int str_ncmp(const char *s1, const char *s2, int n)
 {
+    if (!n) return 0;
     n--;
     while (*s1==*s2 && *s1 && *s2 && n>0) s1++, s2++, n--;
     return *s1-*s2;
