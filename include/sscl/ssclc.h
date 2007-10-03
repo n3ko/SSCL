@@ -104,7 +104,6 @@ struct _SListItem {
 struct _SList {
     SListItem *first;
     SListItem *last;
-    SListItem *cursor;
     int num;
 };
 
@@ -268,7 +267,7 @@ typedef enum {t_eos=0,
 	t_dot='.', t_comma=',', t_colon=':', t_semicolon=';',
 	t_lparen='(', t_rparen=')', t_lbrace='{', t_rbrace='}', t_lbrac='[', t_rbrac=']',
 	t_string='"', t_sqstring='\'',
-	t_word=0x100, t_int, t_oper
+	t_word=0x100, t_int, t_oper, t_err=-1
 } Token;
 typedef enum {la_string, la_file} LexicalAnalyzerType;
 
