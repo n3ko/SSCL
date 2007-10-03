@@ -38,24 +38,30 @@ class LexicalAnalyzer {
 	virtual void test_oper(const char *oper) {;}
 	virtual void parse_token(Token token)
 		{if (lexical_analyzer_parse_token(&cs, token))
-			throw Error("E-LEX", "EXPTOK", "token expected");}
+			throw Error("E-LEX", "EXPTOK", "[%d:%d] token expected",
+				cs.file_line, cs.file_char);}
 	virtual void parse_oper(const char *oper)
 		{if (lexical_analyzer_parse_oper(&cs, oper))
-			throw Error("E-LEX", "EXPWRD", "operator %s expected", oper);}
+			throw Error("E-LEX", "EXPWRD", "[%d:%d] operator %s expected",
+				cs.file_line, cs.file_char, oper);}
 	virtual void parse_word(const char *word)
 		{if (lexical_analyzer_parse_word(&cs, word))
-			throw Error("E-LEX", "EXPWRD", "word '%s' expected", word);}
+			throw Error("E-LEX", "EXPWRD", "[%d:%d] word '%s' expected",
+				cs.file_line, cs.file_char, word);}
 	virtual char *parse_get_word(char *buf, const int n)
 		{char *ret=lexical_analyzer_parse_get_word(&cs, buf, n);
-		if (!ret) throw Error("E-LEX", "EXPWRD", "word expected");
+		if (!ret) throw Error("E-LEX", "EXPWRD", "[%d:%d] word expected",
+			cs.file_line, cs.file_char);
 		else return ret;}
 	virtual char *parse_get_string(char *buf, const int n)
 		{char *ret=lexical_analyzer_parse_get_string(&cs, buf, n);
-		if (!ret) throw Error("E-LEX", "EXPSTR", "string expected");
+		if (!ret) throw Error("E-LEX", "EXPSTR", "[%d:%d] string expected",
+			cs.file_line, cs.file_char);
 		else return ret;}
 	virtual char *parse_get_sstring(char *buf, Token token, const int n)
 		{char *ret=lexical_analyzer_parse_get_sstring(&cs, token, buf, n);
-		if (!ret) throw Error("E-LEX", "EXPSTR", "string expected");
+		if (!ret) throw Error("E-LEX", "EXPSTR", "[%d:%d] string expected",
+			cs.file_line, cs.file_char);
 		else return ret;}
 	// Override lexical analyzer
 	virtual int get_c() {return lexical_analyzer_get_c(&cs);}

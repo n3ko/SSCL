@@ -168,6 +168,7 @@ Token lexical_analyzer_next(LexicalAnalyzer *la)
 	case '}': la->token=t_rbrace; c=la->get_c(la); break;
 	case '[': la->token=t_lbrac; c=la->get_c(la); break;
 	case ']': la->token=t_rbrac; c=la->get_c(la); break;
+	default: la->token=t_err; c=la->get_c(la);
 //	default: Error("E-LEX", 0, "Parse error at or near '%c'", c);
     }
     la->c=c; return la->token;
@@ -194,6 +195,7 @@ Bool lexical_analyzer_parse_token(LexicalAnalyzer *la, Token tok)
 	    case t_rbrace: msg="'}'"; break;
 	    case t_lbrac: msg="'['"; break;
 	    case t_rbrac: msg="']'"; break;
+	    case t_err: msg="error"; break;
 	}
 	//Error("E-LEX", "TOKEXP", "%s expected", msg);
 	return true;
