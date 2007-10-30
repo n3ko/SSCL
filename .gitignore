@@ -1,0 +1,5 @@
+sscl*.spec
+.*.sw?
+build
+libsscl*.a
+libsscl*.so*
