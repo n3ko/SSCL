@@ -11,8 +11,9 @@ SSCLC_OBJ = $(SSCLC_SRC:ssclc/%.c=build/ssclc/%.o)
 SSCL_OBJ = $(SSCL_SRC:sscl/%.cc=build/sscl/%.o)
 SSCL_GITID = $(shell cat "$$( (if [ -L ".git/HEAD" ];then readlink .git/HEAD;else cat .git/HEAD 2>/dev/null; fi; ) | sed 's+.*refs/+.git/refs/+')" 2>/dev/null)
 
+SSCLC_OBJ := $(SSCLC_OBJ) build/ssclc/gitid.o
 ifneq (,$(SSCL_GITID))
-	SSCLC_OBJ := $(SSCLC_OBJ) build/ssclc/gitid.o
+	SSCL_GITID := -id-$(SSCL_GITID)
 endif
 
 #SSCLC_OBJ = ssclc/o/strfunc.o o/list.o o/avltree.o o/stream.o \
@@ -95,7 +96,7 @@ build/ssclc/gitid.o: build/gitid.c
 	$(CC) $(COPTS) -c -o $@ $<
 
 build/gitid.c:
-	echo 'char *_sscl_version_id="SSCL_VERSION-'$(VERSION)-id-$(SSCL_GITID)'";' > $@
+	echo 'char *_sscl_version_id="SSCL_VERSION-'$(VERSION)$(SSCL_GITID)'";' > $@
 
 sscl.spec: sscl.spec.in
 	sed -e "s/_VER_/$(VERSION)/" -e "s!_PREFIX_!$(PREFIX)!" <sscl.spec.in >sscl.spec
