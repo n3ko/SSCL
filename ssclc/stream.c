@@ -125,7 +125,7 @@ int stream_get_c(Stream *s)
 int stream_get_c_wait(Stream *s)
 {
     int c;
-    while (!(c=stream_get_c(s))) usleep(100);
+    while (!(c=stream_get_c(s))) sscl_sleep();
     return c;
 }
 
@@ -203,7 +203,7 @@ int stream_get_s_wait(Stream *s, char *buffer, int n)
 {
     int ret;
     while (!(ret=stream_get_s(s, buffer, n))) {
-	usleep(100);
+	sscl_sleep();
     }
     return ret;
 }
@@ -219,7 +219,7 @@ int stream_write(Stream *s, const char *buffer, int n)
     while (st>0 && (w!=-1 || errno==EAGAIN)) {
 	w=write(s->fd, buffer+n-st, st);
 	if (w>0) st-=w;
-	if (w<0) usleep(100);
+	if (w<0) sscl_sleep();
     }
     return w<0 ? w : n;
 }

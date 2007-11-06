@@ -91,7 +91,7 @@ void netconn_done(NetConn *net)
     if (net->_parent.fd>=0) {
 	shutdown(net->_parent.fd, 2);
 	while (read(net->_parent.fd, buf, 30)>0);
-	usleep(100);
+	sscl_sleep();
 	stream_done(STREAM(net));
 	if (net->server) netserver_remove(net->server, net->_parent.fd);
     }
@@ -176,7 +176,7 @@ void netserver_done(NetServer *serv)
     char buf[32];
     shutdown(serv->fd, 2);
     while (read(serv->fd, buf, 30)>0);
-    usleep(100);
+    sscl_sleep();
     if (serv->family==nf_unix) unlink(serv->address);
     close(serv->fd);
 }

@@ -77,6 +77,12 @@ void mem_alloc_stat_show();
 #define FREE_A(ptr, size)
 
 //*********************
+// Time
+//*********************
+void sscl_sleep();
+void sscl_sleep_set(int usec);
+
+//*********************
 // List
 //*********************
 typedef struct _ListItem ListItem;
