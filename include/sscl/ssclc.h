@@ -150,6 +150,7 @@ typedef struct _HashNode HashNode;
 typedef unsigned int (*HashFunc)(const char *str);
 #define HASH_FUNC(x) ((HashFunc)x)
 typedef char *(*HashPrintFunc)(char *d, const void *data, int n);
+#define HASH_PRINT_FUNC(x) ((HashPrintFunc)x)
 
 struct _Hash {
     int count;

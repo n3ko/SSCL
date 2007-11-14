@@ -152,13 +152,22 @@ void hash_foreach_free_func(const char *key, void *data, void *d)
 
 char *hash_print(char *d, const char *s, int n, Hash *hash, HashPrintFunc print)
 {
-    char k[1024], *p;
+    char k[1024], *p, c;
     int i;
     while (*s && n>0) {
-	if (*s=='$') {
+	if (*s=='\\') {
+	    switch (c=*s++) {
+		case 'n': c='\n'; break;
+		case 't': c='\t'; break;
+		case 0:   continue;
+	    }
+	} else if (*s=='$') {
 	    s++;
 	    if (*s=='$') *d++=*s++;
 	    else {
+		if (*s=='\\') { print=HASH_PRINT_FUNC(&sscl_str_ecpy); s++; }
+		if (*s=='%') { print=HASH_PRINT_FUNC(&sscl_str_ecpy); s++; }
+		if (*s=='=') { print=HASH_PRINT_FUNC(&sscl_str_sqlcpy); s++; }
 		for (i=0, p=k; (('A'<=*s && *s<='Z') || ('0'<=*s && *s<='9')
 			|| ('a'<=*s && *s<='z') || *s=='_') && BF(k, p);
 			i++) *p++=*s++;
