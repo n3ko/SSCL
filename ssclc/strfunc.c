@@ -131,7 +131,7 @@ int str_splitup(char **dst, char *s, int n, int alloc)
 		i++;
 		break;
 	    case '\n':
-		*d=0; break;
+		*d=0; s++; break;
 	    case '\\':
 		s++;
 		switch (c=*s++) {
