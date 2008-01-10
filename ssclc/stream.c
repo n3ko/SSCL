@@ -21,6 +21,8 @@
 #include <sscl/ssclc.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/time.h>
+#include <time.h>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -129,6 +131,20 @@ int stream_get_c_wait(Stream *s)
     return c;
 }
 
+int stream_get_c_wait_t(Stream *s, int msec)
+{
+    struct timeval tv_s, tv_c;
+    int c;
+    gettimeofday(&tv_s, NULL);
+    gettimeofday(&tv_c, NULL);
+    while (!(c=stream_get_c(s))
+	    && tv_c.tv_sec*1000+tv_c.tv_usec/1000 < msec+tv_s.tv_sec*1000+tv_s.tv_usec/1000) {
+	sscl_sleep();
+	gettimeofday(&tv_c, NULL);
+    }
+    return c;
+}
+
 #define ENDL(x) ((x)=='\n')
 int stream_get_s(Stream *s, char *buffer, int n)
 {
@@ -204,6 +220,20 @@ int stream_get_s_wait(Stream *s, char *buffer, int n)
     int ret;
     while (!(ret=stream_get_s(s, buffer, n))) {
 	sscl_sleep();
+    }
+    return ret;
+}
+
+int stream_get_s_wait_t(Stream *s, char *buffer, int n, int msec)
+{
+    struct timeval tv_s, tv_c;
+    int ret;
+    gettimeofday(&tv_s, NULL);
+    gettimeofday(&tv_c, NULL);
+    while (!(ret=stream_get_s(s, buffer, n))
+	    && tv_c.tv_sec*1000+tv_c.tv_usec/1000 < msec+tv_s.tv_sec*1000+tv_s.tv_usec/1000) {
+	sscl_sleep();
+	gettimeofday(&tv_c, NULL);
     }
     return ret;
 }
