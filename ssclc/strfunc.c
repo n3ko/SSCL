@@ -86,6 +86,10 @@ char *str_printv(char *dst, const char *s, int n, va_list args)
 			d1=d; d=str_ecpy(d, p, n); n-=(d-d1);
 		    }
 		    break;
+		case 'q': if ((p=va_arg(args, char *))) {
+			d1=d; d=str_sqlcpy(d, p, n); n-=(d-d1);
+		    }
+		    break;
 		case 'd': d1=d;
 			d=str_itoa(d, n, va_arg(args, int), 0, 10); n-=(d-d1);
 			break;
