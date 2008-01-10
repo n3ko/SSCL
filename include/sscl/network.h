@@ -43,8 +43,10 @@ class NetConn {
 	virtual ~NetConn() {/*if (cs._parent.fd>0)*/ netconn_done(&cs);}
 	virtual int get_c() {return stream_get_c(&cs._parent);}
 	virtual int get_c_wait() {return stream_get_c_wait(&cs._parent);}
+	virtual int get_c_wait_t(int msec) {return stream_get_c_wait_t(&cs._parent, msec);}
 	int get_s(char *buffer, int n) {return stream_get_s(&cs._parent, buffer, n);}
 	int get_s_wait(char *buffer, int n) {return stream_get_s_wait(&cs._parent, buffer, n);}
+	int get_s_wait_t(char *buffer, int n, int msec) {return stream_get_s_wait_t(&cs._parent, buffer, n, msec);}
 	virtual int put_c(const char c) {return stream_put_c(&cs._parent, c);}
 	virtual int write(const char *buffer, int n) {return stream_write(&cs._parent, buffer, n);}
 	virtual int put_s(const char *buffer) {return stream_put_s(&cs._parent, buffer);}
