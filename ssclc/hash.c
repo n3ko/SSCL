@@ -150,9 +150,10 @@ void hash_foreach_free_func(const char *key, void *data, void *d)
     free(data);
 }
 
-char *hash_print(char *d, const char *s, int n, Hash *hash, HashPrintFunc print)
+char *hash_print(char *d, const char *s, int n, Hash *hash, HashPrintFunc defprint)
 {
     char k[1024], *p, c;
+    HashPrintFunc print;
     int i;
     while (*s && n>0) {
 	if (*s=='\\') {
@@ -165,6 +166,7 @@ char *hash_print(char *d, const char *s, int n, Hash *hash, HashPrintFunc print)
 	    s++;
 	    if (*s=='$') *d++=*s++;
 	    else {
+		print=defprint;
 		if (*s=='\\') { print=HASH_PRINT_FUNC(&sscl_str_ecpy); s++; }
 		if (*s=='%') { print=HASH_PRINT_FUNC(&sscl_str_ecpy); s++; }
 		if (*s=='=') { print=HASH_PRINT_FUNC(&sscl_str_sqlcpy); s++; }
