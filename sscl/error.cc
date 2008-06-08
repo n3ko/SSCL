@@ -73,7 +73,7 @@ Error::~Error()
 
 static char errstr[1024];
 char *Error::format() {
-    char *lev;
+    const char *lev;
     switch (level[0]) {
 	case 'F': lev="FATAL"; break;
 	case 'E': lev="ERROR"; break;

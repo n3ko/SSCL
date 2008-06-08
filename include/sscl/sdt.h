@@ -29,7 +29,7 @@ class SDTConn: public Object {
     public:
 	SDTConn(const int len=SSCL_BUF_LEN);
 	~SDTConn();
-	virtual void log(SDTLogLevel level, char *format,...);
+	virtual void log(SDTLogLevel level, const char *format,...);
 	virtual void set_state(SDTState stat);
 	virtual int check_event();
 	// Event methods, called by check_event()
@@ -38,7 +38,7 @@ class SDTConn: public Object {
 	virtual void quit_event()=0;
 	virtual void status_event();
     protected:
-	virtual void send(char *format, ...);
+	virtual void send(const char *format, ...);
     private:
 	SDTState state;
 	InStream in;
