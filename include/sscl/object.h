@@ -26,9 +26,9 @@ namespace SSCL {
 // ============================================================= Object
 class Object {
     public:
-	Object(char *nam="");
+	Object(const char *nam="");
 	virtual ~Object();
-	char *get_name();
+	const char *get_name();
     private:
 	char *name;
 };
@@ -38,7 +38,7 @@ class Container: public Object {
     public:
 	// The master flag controls whether the contained objects should be
 	// destructed on container destruction.
-	Container(char *nam="", bool master=true);
+	Container(const char *nam="", bool master=true);
     protected:
 	bool master;
 };

@@ -21,7 +21,7 @@
 namespace SSCL {
 
 // ============================================================= Object
-Object::Object(char *nam)
+Object::Object(const char *nam)
 {
     name=strdup(nam);
 }
@@ -31,13 +31,13 @@ Object::~Object()
     free(name);
 }
 
-char *Object::get_name()
+const char *Object::get_name()
 {
     return name;
 }
 
 // ============================================================ Container
-Container::Container(char *nam, bool mstr): Object(nam)
+Container::Container(const char *nam, bool mstr): Object(nam)
 {
     master=mstr;
 }
