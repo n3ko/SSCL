@@ -171,6 +171,7 @@ struct _HashNode {
 unsigned int cstring_hash(const char *str);
 Hash *hash_init(Hash *hash, int size, HashFunc hash_func);
 void hash_done(Hash *hash);
+void hash_clean(Hash *hash);
 void *hash_get(const Hash *hash, const char *key);
 void hash_set(Hash *hash, const char *key, void *data);
 const void *hash_delete(Hash *hash, const char *key);

@@ -57,6 +57,19 @@ void hash_done(Hash *hash)
     free(hash->node);
 }
 
+void hash_clean(Hash *hash)
+{
+    int i, j;
+    for (i=0; i<hash->size; i++) {
+	HashNode *node=hash->node[i];
+	if (node) for (j=0; j<node->count; j++)
+	    free(node->entry[j].key);
+	if (hash->node[i]) mem_free_heap(hash->node[i], sizeof(HashNode)+sizeof(node->entry[0]));
+	hash->node[i]=NULL;
+    }
+    hash->count=0;
+}
+
 static void rebuild_hash_table(Hash *hash)
 {
     int i, j;
