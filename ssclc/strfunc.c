@@ -17,6 +17,7 @@
  */
 
 #include <sscl/strfunc.h>
+#include <string.h>
 
 char *_str_tok_internal_ptr;
 char *_str_split_internal_ptr;
@@ -189,11 +190,11 @@ char *sscl_str_pad_u8(char *d, const char *s, char type, int l, int n) {
 	default:
 	    end=d; *end=0;
     }
-    printf("-%s-\n",d);
+//    printf("-%s-\n",d);
     return end;
 }
 
-int str_utf8_decomp(char **str)
+int str_utf8_decomp(const char **str)
 {
     unsigned char **s=(unsigned char **)str;
     int ret;
@@ -254,16 +255,16 @@ int str_utf8_decomp(char **str)
 	(*s)+=7;
     } else {
 	// Error
-	printf("Error in UTF-8 sequence\n");
+//	printf("Error in UTF-8 sequence\n");
 	ret=1;
     }
     return ret;
 }
 
 #include <stdio.h>
-Locale *locale_init(Locale *loc, char *localedef)
+Locale *locale_init(Locale *loc, const char *localedef)
 {
-    char *s=localedef+8, *sav; // Skip 'lang:hu:
+    const char *s=localedef+8, *sav; // Skip 'lang:hu:
     unsigned int min=0xffffff, max=0, i;
     loc->bitshift=*s++-'0'; // FIXME
     s++; // Skip ':'

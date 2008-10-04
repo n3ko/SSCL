@@ -309,8 +309,8 @@ char *sscl_str_pad(char *d, const char *s, char type, int l);
 // dest buf, source, pad type, length in character, buff size (byte)
 char *sscl_str_pad_u8(char *d, const char *s, char type, int l, int n);
 
-int str_utf8_decomp(char **s);
-Locale *locale_init(Locale *loc, char *localedef);
+int str_utf8_decomp(const char **s);
+Locale *locale_init(Locale *loc, const char *localedef);
 void locale_done(Locale *loc);
 int str_cmp_locale(Locale *loc, const char *s1, const char *s2);
 int str_ncmp_locale(Locale *loc, const char *s1, const char *s2, int n);
