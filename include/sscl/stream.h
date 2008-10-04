@@ -53,8 +53,10 @@ class InStream: virtual public NullStream {
 	virtual ~InStream() {}
 	virtual int get_c() {return stream_get_c(&cs);}
 	virtual int get_c_wait() {return stream_get_c_wait(&cs);}
+	virtual int get_c_wait_t(int msec) {return stream_get_c_wait_t(&cs, msec);}
 	int get_s(char *buffer, int n) {return stream_get_s(&cs, buffer, n);}
 	int get_s_wait(char *buffer, int n) {return stream_get_s_wait(&cs, buffer, n);}
+	int get_s_wait_t(char *buffer, int n, int msec) {return stream_get_s_wait_t(&cs, buffer, n, msec);}
 };
 
 class OutStream: virtual public NullStream {

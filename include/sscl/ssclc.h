@@ -77,6 +77,12 @@ void mem_alloc_stat_show();
 #define FREE_A(ptr, size)
 
 //*********************
+// Time
+//*********************
+void sscl_sleep();
+void sscl_sleep_set(int usec);
+
+//*********************
 // List
 //*********************
 typedef struct _ListItem ListItem;
@@ -144,6 +150,7 @@ typedef struct _HashNode HashNode;
 typedef unsigned int (*HashFunc)(const char *str);
 #define HASH_FUNC(x) ((HashFunc)x)
 typedef char *(*HashPrintFunc)(char *d, const void *data, int n);
+#define HASH_PRINT_FUNC(x) ((HashPrintFunc)x)
 
 struct _Hash {
     int count;
@@ -164,6 +171,7 @@ struct _HashNode {
 unsigned int cstring_hash(const char *str);
 Hash *hash_init(Hash *hash, int size, HashFunc hash_func);
 void hash_done(Hash *hash);
+void hash_clean(Hash *hash);
 void *hash_get(const Hash *hash, const char *key);
 void hash_set(Hash *hash, const char *key, void *data);
 const void *hash_delete(Hash *hash, const char *key);
@@ -204,8 +212,10 @@ int stream_try_read(Stream *s);
 int stream_read(Stream *s, char *buffer, int n);
 int stream_get_c(Stream *s);
 int stream_get_c_wait(Stream *s);
+int stream_get_c_wait_t(Stream *s, int msec);
 int stream_get_s(Stream *s, char *buffer, int n);
 int stream_get_s_wait(Stream *s, char *buffer, int n);
+int stream_get_s_wait_t(Stream *s, char *buffer, int n, int msec);
 int stream_put_c(Stream *s, const char c);
 int stream_write(Stream *s, const char *buffer, int n);
 int stream_put_s(Stream *s, const char *buffer);

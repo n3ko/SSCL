@@ -46,7 +46,7 @@ SDTConn::~SDTConn()
 {
 }
 
-void SDTConn::send(char *format,...)
+void SDTConn::send(const char *format,...)
 {
     char buf[1024];
     va_list args;
@@ -57,7 +57,7 @@ void SDTConn::send(char *format,...)
     out.put_c('\n');
 }
 
-void SDTConn::log(SDTLogLevel level, char *format,...)
+void SDTConn::log(SDTLogLevel level, const char *format,...)
 {
     char buf[1024];
     va_list args;

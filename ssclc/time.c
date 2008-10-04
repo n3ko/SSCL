@@ -1,5 +1,5 @@
 /* SSCL - Symbion Simple Class Library
- * Copyright (C) 2001 Szilard Hajba
+ * Copyright (C) 2001-2005 Szilard Hajba
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -15,33 +15,18 @@
  * License along with this library; if not, write to the Free
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
-#ifndef _SSCL_OBJECT_H_
-#define _SSCL_OBJECT_H_
 
-#include <stdlib.h>
-#include <string.h>
+#include <sscl/ssclc.h>
 
-namespace SSCL {
+int sscl_sleep_us=50000;	// Default is 50000us (1/20 sec)
 
-// ============================================================= Object
-class Object {
-    public:
-	Object(const char *nam="");
-	virtual ~Object();
-	const char *get_name();
-    private:
-	char *name;
-};
+void sscl_sleep()
+{
+    struct timeval tv={0, sscl_sleep_us};
+    select(0, NULL, NULL, NULL, &tv);
+}
 
-// ============================================================ Container
-class Container: public Object {
-    public:
-	// The master flag controls whether the contained objects should be
-	// destructed on container destruction.
-	Container(const char *nam="", bool master=true);
-    protected:
-	bool master;
-};
-
-} /* namespace SSCL */
-#endif /* _SSCL_OBJECT_H_ */
+void sscl_sleep_set(int usec)
+{
+    sscl_sleep_us=usec;
+}

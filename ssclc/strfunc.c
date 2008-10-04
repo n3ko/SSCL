@@ -87,6 +87,10 @@ char *str_printv(char *dst, const char *s, int n, va_list args)
 			d1=d; d=str_ecpy(d, p, n); n-=(d-d1);
 		    }
 		    break;
+		case 'q': //if ((p=va_arg(args, char *))) {
+			d1=d; d=str_sqlcpy(d, va_arg(args, char *), n); n-=(d-d1);
+		    //}
+		    break;
 		case 'd': d1=d;
 			d=str_itoa(d, n, va_arg(args, int), 0, 10); n-=(d-d1);
 			break;
@@ -132,7 +136,7 @@ int str_splitup(char **dst, char *s, int n, int alloc)
 		i++;
 		break;
 	    case '\n':
-		*d=0; break;
+		*d=0; s++; break;
 	    case '\\':
 		s++;
 		switch (c=*s++) {

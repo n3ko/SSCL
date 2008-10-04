@@ -43,6 +43,9 @@
 #ifndef str_ecpy
 #  define str_ecpy(d, s, n) sscl_str_ecpy((d), (s), (n))
 #endif
+#ifndef str_sqlcpy
+#  define str_sqlcpy(d, s, n) sscl_str_sqlcpy((d), (s), (n))
+#endif
 #ifndef str_tcpy
 #  define str_tcpy(d, s, n) sscl_str_tcpy((d), (s), (n))
 #endif
@@ -127,6 +130,44 @@ static inline char *sscl_str_ecpy(char *d, const char *s, int n)
     *d=0;
     return d;
 }
+
+static inline char *sscl_str_sqlcpy(char *d, const char *s, int n)
+{
+    char *od=d;
+    if (!d) return d;
+    if (s) {
+	if (n) *d++='\'', n--;
+	while (*s && n>0) {
+	    if (*s=='\'' || *s=='\\' || *s=='|') {
+		if (n>=2) {
+		    *d++='\\'; *d++=*s++; n-=2;
+		} else n--;
+	    } else if (*s=='\n') {
+		if (n>=2) {
+		    *d++='\\'; *d++='n'; s++; n-=2;
+		} else n--;
+	    } else if (*s=='\t') {
+		if (n>=2) {
+		    *d++='\\'; *d++='t'; s++; n-=2;
+		} else n--;
+	    } else *d++=*s++; n--;
+	}
+	if (n) *d++='\'', n--;
+	else {
+	    *od=0;
+	    return od;
+	}
+	*d=0;
+    } else {
+	if (n>5) d=sscl_str_cpy(d, "NULL", 5);
+	else {
+	    *od=0;
+	    return od;
+	}
+    }
+    return d;
+}
+
 
 static inline char *sscl_str_tcpy(char *d, const char *s, int n)
 {

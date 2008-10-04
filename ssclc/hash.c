@@ -57,6 +57,19 @@ void hash_done(Hash *hash)
     free(hash->node);
 }
 
+void hash_clean(Hash *hash)
+{
+    int i, j;
+    for (i=0; i<hash->size; i++) {
+	HashNode *node=hash->node[i];
+	if (node) for (j=0; j<node->count; j++)
+	    free(node->entry[j].key);
+	if (hash->node[i]) mem_free_heap(hash->node[i], sizeof(HashNode)+sizeof(node->entry[0]));
+	hash->node[i]=NULL;
+    }
+    hash->count=0;
+}
+
 static void rebuild_hash_table(Hash *hash)
 {
     int i, j;
@@ -150,15 +163,26 @@ void hash_foreach_free_func(const char *key, void *data, void *d)
     free(data);
 }
 
-char *hash_print(char *d, const char *s, int n, Hash *hash, HashPrintFunc print)
+char *hash_print(char *d, const char *s, int n, Hash *hash, HashPrintFunc defprint)
 {
-    char k[1024], *p;
+    char k[1024], *p, c;
+    HashPrintFunc print;
     int i;
     while (*s && n>0) {
-	if (*s=='$') {
+	if (*s=='\\') {
+	    switch (c=*s++) {
+		case 'n': c='\n'; break;
+		case 't': c='\t'; break;
+		case 0:   continue;
+	    }
+	} else if (*s=='$') {
 	    s++;
 	    if (*s=='$') *d++=*s++;
 	    else {
+		print=defprint;
+		if (*s=='\\') { print=HASH_PRINT_FUNC(&sscl_str_ecpy); s++; }
+		if (*s=='%') { print=HASH_PRINT_FUNC(&sscl_str_ecpy); s++; }
+		if (*s=='=') { print=HASH_PRINT_FUNC(&sscl_str_sqlcpy); s++; }
 		for (i=0, p=k; (('A'<=*s && *s<='Z') || ('0'<=*s && *s<='9')
 			|| ('a'<=*s && *s<='z') || *s=='_') && BF(k, p);
 			i++) *p++=*s++;
