@@ -245,7 +245,7 @@ int stream_put_c(Stream *s, const char c)
 
 int stream_write(Stream *s, const char *buffer, int n)
 {
-    int st=n, w;
+    int st=n, w=0;
     while (st>0 && (w!=-1 || errno==EAGAIN)) {
 	w=write(s->fd, buffer+n-st, st);
 	if (w>0) st-=w;
