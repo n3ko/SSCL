@@ -258,6 +258,16 @@ static inline char *str_dup(const char *s)
     } else return CNULL;
 }
 
+static inline char *str_dupa(const char *s)
+{
+    if (s) {
+	register int l=str_len(s);
+	register char *d=(char*)alloca(l+1);
+	if (d) sscl_str_cpy(d, s, l);
+	return d;
+    } else return CNULL;
+}
+
 static inline void str_chomp(char *s, const char *chset)
 {
     register const char *chs=chset?chset:"\r\n";
