@@ -261,7 +261,7 @@ static inline char *str_dup(const char *s)
 #define str_cpya(d,s) { \
     if (s) { \
 	register int l=str_len(s); \
-	*d=(char*)alloca(l+1); \
+	d=(char*)alloca(l+1); \
 	if (d) sscl_str_cpy(d, s, l); \
     } \
 }
