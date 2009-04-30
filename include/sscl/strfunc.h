@@ -258,7 +258,7 @@ static inline char *str_dup(const char *s)
     } else return CNULL;
 }
 
-#define str_cpya(s,d) { \
+#define str_cpya(d,s) { \
     if (s) { \
 	register int l=str_len(s); \
 	*d=(char*)alloca(l+1); \
