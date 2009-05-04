@@ -23,7 +23,7 @@ endif
 #	  o/sdt.o
 
 #---------------------------------------- Main rules
-all: build $(SSCLC_LIB) $(SSCLC_SO_NAME) libssclc.so $(SSCL_AR) sscl.spec
+all: build $(SSCLC_LIB) $(SSCLC_SO_NAME) libssclc.so libssclc-$(MAIN_VERSION).so $(SSCL_AR) sscl.spec
 
 clean:
 	rm -rf build; rm -f core .depend libsscl.so* libssclc.so* libsscl.a
@@ -34,9 +34,9 @@ depend:
 
 install_root:
 	#$(INSTALL) --mode 0755 $(SSCLC_LIB) $(SSCL_LIB) $(LIBDIR)
-	$(INSTALL) --mode 0755 $(SSCLC_LIB) $(SSCL_AR) $(LIBDIR)
-	(cd $(LIBDIR) && $(LN_S) -f $(SSCLC_LIB) $(SSCLC_SO_NAME))
-	(cd $(LIBDIR) && $(LN_S) -f $(SSCLC_LIB) libssclc.so)
+	$(INSTALL) --mode 0755 $(SSCLC_LIB) $(SSCL_AR) $(SSCLC_SO_NAME) libssclc.so libssclc-$(MAIN_VERSION).so $(LIBDIR)
+#	(cd $(LIBDIR) && $(LN_S) -f $(SSCLC_LIB) $(SSCLC_SO_NAME))
+#	(cd $(LIBDIR) && $(LN_S) -f $(SSCLC_LIB) libssclc.so)
 	mkdir -p $(INCLUDEDIR)
 	$(INSTALL) --mode 0644 include/sscl/*.h $(INCLUDEDIR)
 
@@ -78,6 +78,8 @@ $(SSCL_LIB): $(SSCL_OBJ)
 	ld $(CCLDOPTS) -o $@ $(SSCL_OBJ)
 
 $(SSCLC_SO_NAME):
+	$(LN_S) -f $(SSCLC_LIB) $@
+libssclc-$(MAIN_VERSION).so:
 	$(LN_S) -f $(SSCLC_LIB) $@
 libssclc.so:
 	$(LN_S) -f $(SSCLC_LIB) $@
