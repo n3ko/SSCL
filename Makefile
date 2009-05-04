@@ -34,10 +34,11 @@ depend:
 	@echo "Dependencies were remade, type \`make' to make the binaries!"
 
 install_root:
-	#$(INSTALL) --mode 0755 $(SSCLC_LIB) $(SSCL_LIB) $(LIBDIR)
-	$(INSTALL) --mode 0755 $(SSCLC_LIB) $(SSCL_AR) $(SSCLC_SO_NAME) libssclc.so libssclc-$(MAIN_VERSION).so $(LIBDIR)
-#	(cd $(LIBDIR) && $(LN_S) -f $(SSCLC_LIB) $(SSCLC_SO_NAME))
-#	(cd $(LIBDIR) && $(LN_S) -f $(SSCLC_LIB) libssclc.so)
+#	$(INSTALL) --mode 0755 $(SSCLC_LIB) $(SSCL_AR) $(SSCLC_SO_NAME) libssclc.so libssclc-$(MAIN_VERSION).so $(LIBDIR)
+	$(INSTALL) --mode 0755 $(SSCLC_LIB) $(SSCL_AR) $(LIBDIR)
+	(cd $(LIBDIR) && $(LN_S) -f $(SSCLC_LIB) $(SSCLC_SO_NAME))
+	(cd $(LIBDIR) && $(LN_S) -f $(SSCLC_LIB) libssclc.so)
+	(cd $(LIBDIR) && $(LN_S) -f $(SSCLC_LIB) libssclc-$(MAIN_VERSION).so)
 	mkdir -p $(INCLUDEDIR)
 	$(INSTALL) --mode 0644 include/sscl/*.h $(INCLUDEDIR)
 
