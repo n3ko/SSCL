@@ -12,6 +12,7 @@ SSCL_OBJ = $(SSCL_SRC:sscl/%.cc=build/sscl/%.o)
 SSCL_GITID = $(shell cat "$$( (if [ -L ".git/HEAD" ];then readlink .git/HEAD;else cat .git/HEAD 2>/dev/null; fi; ) | sed 's+.*refs/+.git/refs/+')" 2>/dev/null)
 
 SSCLC_OBJ := $(SSCLC_OBJ) build/ssclc/gitid.o
+SSCL_OBJ := $(SSCL_OBJ) build/ssclc/gitid.o
 ifneq (,$(SSCL_GITID))
 	SSCL_GITID := -id-$(SSCL_GITID)
 endif
@@ -97,7 +98,7 @@ build/sscl/%.o: sscl/%.cc
 build/ssclc/gitid.o: build/gitid.c
 	$(CC) $(COPTS) -c -o $@ $<
 
-build/gitid.c:
+build/gitid.c: Makefile
 	echo 'char *_sscl_version_id="SSCL_VERSION-'$(VERSION)$(SSCL_GITID)'";' > $@
 
 sscl.spec: sscl.spec.in
