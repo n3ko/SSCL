@@ -135,7 +135,7 @@ static inline char *sscl_str_sqlcpy(char *d, const char *s, int n)
 {
     char *od=d;
     if (!d) return d;
-    if (s) {
+    if (s && s[0]) {
 	if (n) *d++='\'', n--;
 	while (*s && n>0) {
 	    if (*s=='\'' || *s=='\\' || *s=='|') {
